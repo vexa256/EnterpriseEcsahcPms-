@@ -10,21 +10,34 @@
     @import url('https://rsms.me/inter/inter.css');
 </style>
 
+
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 
 
 
 <link
     href="https://cdn.datatables.net/v/dt/jq-3.7.0/jszip-3.10.1/dt-2.2.1/b-3.2.1/b-colvis-3.2.1/b-html5-3.2.1/b-print-3.2.1/r-3.0.3/datatables.min.css"
     rel="stylesheet">
+<script src="{{ asset('dist/libs/tom-select/dist/js/tom-select.base.min.js?1738096684') }}" defer></script>
+
 
 
 <style>
     .dt-info {
 
         display: none !important;
+    }
+
+    .ts-wrapper {
+
+        z-index: 100000 !important;
+    }
+
+    .ts-dropdown {
+        z-index: 9999 !important;
     }
 </style>
 

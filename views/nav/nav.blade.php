@@ -154,10 +154,10 @@
                                             <a class="dropdown-item" href="{{ route('MgtSO') }}">
                                                 ECSA-HC Strategic Objectives
                                             </a>
-                                            <a class="dropdown-item" href="./accordion.html">
+                                            <a class="dropdown-item" href="{{ route('mpaIndicators.SelectEntity') }}">
                                                 MPA Indicators
                                             </a>
-                                            <a class="dropdown-item" href="{{ route('MgtSO') }}">
+                                            <a class="dropdown-item" href="{{ route('SelectSo') }}">
                                                 ECSA-HC Indicators
                                             </a>
 

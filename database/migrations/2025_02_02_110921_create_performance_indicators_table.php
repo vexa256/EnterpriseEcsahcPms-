@@ -20,7 +20,7 @@ return new class extends Migration
             $table->integer('Target_Year1')->nullable();       // Target for Year 1
             $table->integer('Target_Year2')->nullable();       // Target for Year 2
             $table->integer('Target_Year3')->nullable();       // Target for Year 3
-            $table->text('Responsible_Cluster');               // Responsible Clusters/Programs/Projects
+            $table->json('Responsible_Cluster');               // Responsible Clusters/Programs/Projects
             $table->timestamps();
         });
     }

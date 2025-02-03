@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('mpa_indicators', function (Blueprint $table) {
             $table->id();
-            $table->string('IndicatorPrimaryCategory', 255);
+            $table->enum('IndicatorPrimaryCategory', ['RRF', 'CRF']);
             $table->string('IndicatorSecondaryCategory', 255);
             $table->string('EntityID', 255);
             $table->string('IID', 255);
@@ -22,8 +22,9 @@ return new class extends Migration
             $table->text('IndicatorQuestion')->nullable();
             $table->text('RemarksComments')->nullable();
             $table->string('SourceOfData', 255)->nullable();
-            $table->enum('ResponseType', ['Text', 'Number', 'Boolean']);
-            $table->string('ReportingPeriod', 50)->nullable();
+            $table->enum('ResponseType', ['Text', 'Number', 'Boolean', 'Yes/No']);
+            // $table->string('ReportingPeriod', 50)->nullable();
+            $table->enum('ReportingPeriod', ['Quarterly', 'Bi-Annual', 'Annual']);
             $table->string('ExpectedTarget', 255)->nullable();
             $table->string('BaselinePAD2023', 255)->nullable();
             $table->string('Baseline2024', 255)->nullable();
