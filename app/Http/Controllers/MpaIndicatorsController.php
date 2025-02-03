@@ -38,7 +38,7 @@ class MpaIndicatorsController extends Controller
             // If no entity found, just return to the same "SelectEntity" but with an error
             $data = [
                 "Desc"     => "Select an Entity to Manage MPA Indicators",
-                "Page"     => "mpaIndicators.select-entity",
+                "Page"     => "indicators.SelectEntity", // The Blade partial to include in scrn
                 "entities" => DB::table("mpa_entities")->get(),
             ];
 
@@ -56,7 +56,7 @@ class MpaIndicatorsController extends Controller
         // Return data in the required format
         $data = [
             "Desc"           => "Manage Indicators for " . $entity->Entity,
-            "Page"           => "mpaIndicators.manage-indicators",
+            "Page"           => "indicators.MgtMpaIndicators",
             "entities"       => DB::table("mpa_entities")->get(), // If your layout needs all entities
                                                                   // Additional data needed by the partial
             "SelectedEntity" => $entity,
@@ -264,7 +264,7 @@ class MpaIndicatorsController extends Controller
         // Return the consistent data array for the "scrn" view
         $data = [
             "Desc"           => "Manage Indicators for " . $entity->Entity,
-            "Page"           => "mpaIndicators.manage-indicators",
+            "Page"           => "indicators.MgtMpaIndicators",
             "entities"       => DB::table("mpa_entities")->get(),
             "SelectedEntity" => $entity,
             "indicators"     => $indicators,

@@ -155,7 +155,14 @@
                                                 ECSA-HC Strategic Objectives
                                             </a>
                                             <a class="dropdown-item" href="{{ route('mpaIndicators.SelectEntity') }}">
-                                                MPA Indicators
+                                                MPA CRF Indicators
+                                            </a>
+
+
+
+
+                                            <a class="dropdown-item" href="{{ route('mpaIndicators.SelectEntity') }}">
+                                                MPA RRF Indicators
                                             </a>
                                             <a class="dropdown-item" href="{{ route('SelectSo') }}">
                                                 ECSA-HC Indicators
