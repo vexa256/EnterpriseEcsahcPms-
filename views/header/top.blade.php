@@ -16,14 +16,14 @@
                     <div class="btn-list">
                         <a href="{{ url('/') }}" class="btn btn-5" target="_blank" rel="noreferrer">
                             <!-- Replacing the brand-github SVG with FontAwesome -->
-                            <i class="fa-brands fa-github icon icon-2"></i>
+                            <i class="fa-brands fa-graph icon icon-2"></i>
                             ECSA-HC Dashboard
                         </a>
-                        <a href="#" class="btn btn-6" target="_blank" rel="noreferrer">
+                        {{-- <a href="#" class="btn btn-6" target="_blank" rel="noreferrer">
                             <!-- Replacing the heart SVG with FontAwesome -->
                             <i class="fa-solid fa-heart text-pink icon icon-2"></i>
                             MPA Dashboard
-                        </a>
+                        </a> --}}
                     </div>
                 </div>
                 <div class="d-none d-md-flex">

@@ -28,8 +28,8 @@
                                     <div class="dropdown-menu">
                                         <div class="dropdown-menu-columns">
                                             <div class="dropdown-menu-column">
-                                                <a class="dropdown-item" href="{{ route('MgtEntities') }}">MPA
-                                                    Entities</a>
+                                                {{-- <a class="dropdown-item" href="{{ route('MgtEntities') }}">MPA
+                                                    Entities</a> --}}
                                                 <a class="dropdown-item" href="{{ route('MgtClusters') }}">ECSA-HC
                                                     Clusters</a>
                                             </div>
@@ -49,15 +49,15 @@
                                     <div class="dropdown-menu">
                                         <div class="dropdown-menu-columns">
                                             <div class="dropdown-menu-column">
-                                                <a class="dropdown-item" href="{{ route('MgtMpaTimelines') }}">MPA
-                                                    Timelines</a>
+                                                {{-- <a class="dropdown-item" href="{{ route('MgtMpaTimelines') }}">MPA
+                                                    Timelines</a> --}}
                                                 <a class="dropdown-item" href="{{ route('MgtEcsaTimelines') }}">ECSA-HC
                                                     Timelines</a>
                                                 <a class="dropdown-item"
                                                     href="{{ route('MgtEcsaTimelinesStatus') }}">ECSA Timelines
                                                     Status</a>
-                                                <a class="dropdown-item" href="{{ route('MgtMpaTimelinesStatus') }}">MPA
-                                                    Timelines Status</a>
+                                                {{-- <a class="dropdown-item" href="{{ route('MgtMpaTimelinesStatus') }}">MPA
+                                                    Timelines Status</a> --}}
                                             </div>
                                         </div>
                                     </div>
@@ -75,7 +75,7 @@
                                     <div class="dropdown-menu">
                                         <div class="dropdown-menu-columns">
                                             <div class="dropdown-menu-column">
-                                                <a class="dropdown-item" href="{{ route('MgtMpaUsers') }}">MPA Users</a>
+                                                {{-- <a class="dropdown-item" href="{{ route('MgtMpaUsers') }}">MPA Users</a> --}}
                                                 <a class="dropdown-item" href="{{ route('MgtEcsaUsers') }}">ECSA-HC
                                                     Users</a>
                                             </div>
@@ -97,12 +97,12 @@
                                             <div class="dropdown-menu-column">
                                                 <a class="dropdown-item" href="{{ route('MgtSO') }}">ECSA-HC Strategic
                                                     Objectives</a>
-                                                <a class="dropdown-item"
+                                                {{-- <a class="dropdown-item"
                                                     href="{{ route('mpaIndicators.SelectEntity') }}">MPA CRF
-                                                    Indicators</a>
-                                                <a class="dropdown-item"
+                                                    Indicators</a> --}}
+                                                {{-- <a class="dropdown-item"
                                                     href="{{ route('mpaRRF.ShowRRFIndicators') }}">MPA RRF
-                                                    Indicators</a>
+                                                    Indicators</a> --}}
                                                 <a class="dropdown-item" href="{{ route('SelectSo') }}">ECSA-HC
                                                     Indicators</a>
                                             </div>
@@ -144,8 +144,8 @@
                                 <div class="dropdown-menu">
                                     <div class="dropdown-menu-columns">
                                         <div class="dropdown-menu-column">
-                                            <a class="dropdown-item"
-                                                href="{{ route('Reportselectcluster') }}">ECSA-HC Indicators
+                                            <a class="dropdown-item" href="{{ route('Reportselectcluster') }}">ECSA-HC
+                                                Indicators
                                                 Perfomance</a>
                                             <a class="dropdown-item" href="{{ route('Ecsa_SO_selectYear') }}">ECSA-HC
                                                 SO Perfomance</a>
