@@ -24,10 +24,12 @@
                                     data-allow-clear="true">
                                     <option value="">Select a user...</option>
                                     @foreach ($users as $user)
-                                        <option value="{{ $user->UserID }}"
-                                            {{ old('UserID') == $user->UserID ? 'selected' : '' }}>
-                                            {{ $user->name }} - {{ $user->email }}
-                                        </option>
+                                        @if (Auth::user()->AccountRole === 'Admin' || $user->UserID === Auth::user()->UserID)
+                                            <option value="{{ $user->UserID }}"
+                                                {{ old('UserID') == $user->UserID ? 'selected' : '' }}>
+                                                {{ $user->name }} - {{ $user->email }}
+                                            </option>
+                                        @endif
                                     @endforeach
                                 </select>
                                 <label for="UserID">Select ECSA-HC User</label>
@@ -35,6 +37,7 @@
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
+
                             <div class="mt-4">
                                 <button type="submit" class="btn btn-primary w-100">
                                     <svg xmlns="http://www.w3.org/2000/svg"
