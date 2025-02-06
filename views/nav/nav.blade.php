@@ -5,205 +5,152 @@
                 <div class="row flex-fill align-items-center">
                     <div class="col">
                         <ul class="navbar-nav">
+                            <!-- Home -->
                             <li class="nav-item">
                                 <a class="nav-link" href="./">
                                     <span class="nav-link-icon d-md-none d-lg-inline-block">
-                                        <!-- Download SVG icon from http://tabler.io/icons/icon/home -->
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round" class="icon icon-1">
-                                            <path d="M5 12l-2 0l9 -9l9 9l-2 0" />
-                                            <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
-                                            <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
-                                        </svg>
+                                        <i class="fa-solid fa-house"></i>
                                     </span>
-                                    <span class="nav-link-title">
-                                        Home
-                                    </span>
+                                    <span class="nav-link-title">Home</span>
                                 </a>
                             </li>
 
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#navbar-base" data-bs-toggle="dropdown"
-                                    data-bs-auto-close="outside" role="button" aria-expanded="false">
-                                    <span class="nav-link-icon d-md-none d-lg-inline-block">
-                                        <!-- Download SVG icon from http://tabler.io/icons/icon/package -->
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round" class="icon icon-1">
-                                            <path d="M12 3l8 4.5l0 9l-8 4.5l-8 -4.5l0 -9l8 -4.5" />
-                                            <path d="M12 12l8 -4.5" />
-                                            <path d="M12 12l0 9" />
-                                            <path d="M12 12l-8 -4.5" />
-                                            <path d="M16 5.25l-8 4.5" />
-                                        </svg>
-                                    </span>
-                                    <span class="nav-link-title">
-                                        Entities And Clusters
-                                    </span>
-                                </a>
-                                <div class="dropdown-menu">
-                                    <div class="dropdown-menu-columns">
-                                        <div class="dropdown-menu-column">
-                                            <a class="dropdown-item" href="{{ route('MgtEntities') }}">
-                                                MPA Entities
-                                            </a>
-                                            <a class="dropdown-item" href="{{ route('MgtClusters') }}">
-                                                ECSA-HC Clusters
-                                            </a>
-
+                            @if (auth()->check() && auth()->user()->AccountRole === 'Admin')
+                                <!-- Entities And Clusters -->
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#navbar-base" data-bs-toggle="dropdown"
+                                        data-bs-auto-close="outside" role="button" aria-expanded="false">
+                                        <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                            <i class="fa-solid fa-sitemap"></i>
+                                        </span>
+                                        <span class="nav-link-title">Entities And Clusters</span>
+                                    </a>
+                                    <div class="dropdown-menu">
+                                        <div class="dropdown-menu-columns">
+                                            <div class="dropdown-menu-column">
+                                                <a class="dropdown-item" href="{{ route('MgtEntities') }}">MPA
+                                                    Entities</a>
+                                                <a class="dropdown-item" href="{{ route('MgtClusters') }}">ECSA-HC
+                                                    Clusters</a>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </li>
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#navbar-base" data-bs-toggle="dropdown"
-                                    data-bs-auto-close="outside" role="button" aria-expanded="false">
-                                    <span class="nav-link-icon d-md-none d-lg-inline-block">
-                                        <!-- Download SVG icon from http://tabler.io/icons/icon/package -->
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round" class="icon icon-1">
-                                            <path d="M12 3l8 4.5l0 9l-8 4.5l-8 -4.5l0 -9l8 -4.5" />
-                                            <path d="M12 12l8 -4.5" />
-                                            <path d="M12 12l0 9" />
-                                            <path d="M12 12l-8 -4.5" />
-                                            <path d="M16 5.25l-8 4.5" />
-                                        </svg>
-                                    </span>
-                                    <span class="nav-link-title">
-                                        Reporting Timelines
-                                    </span>
-                                </a>
-                                <div class="dropdown-menu">
-                                    <div class="dropdown-menu-columns">
-                                        <div class="dropdown-menu-column">
-                                            <a class="dropdown-item" href="{{ route('MgtMpaTimelines') }}">
-                                                MPA Timelines
-                                            </a>
-                                            <a class="dropdown-item" href="{{ route('MgtEcsaTimelines') }}"> ECSA-HC
-                                                Timelines
-                                            </a>
+                                </li>
 
+                                <!-- Reporting Timelines -->
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#navbar-base" data-bs-toggle="dropdown"
+                                        data-bs-auto-close="outside" role="button" aria-expanded="false">
+                                        <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                            <i class="fa-solid fa-calendar"></i>
+                                        </span>
+                                        <span class="nav-link-title">Reporting Timelines</span>
+                                    </a>
+                                    <div class="dropdown-menu">
+                                        <div class="dropdown-menu-columns">
+                                            <div class="dropdown-menu-column">
+                                                <a class="dropdown-item" href="{{ route('MgtMpaTimelines') }}">MPA
+                                                    Timelines</a>
+                                                <a class="dropdown-item" href="{{ route('MgtEcsaTimelines') }}">ECSA-HC
+                                                    Timelines</a>
+                                                <a class="dropdown-item"
+                                                    href="{{ route('MgtEcsaTimelinesStatus') }}">ECSA Timelines
+                                                    Status</a>
+                                                <a class="dropdown-item" href="{{ route('MgtMpaTimelinesStatus') }}">MPA
+                                                    Timelines Status</a>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </li>
+                                </li>
 
-
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#navbar-base" data-bs-toggle="dropdown"
-                                    data-bs-auto-close="outside" role="button" aria-expanded="false">
-                                    <span class="nav-link-icon d-md-none d-lg-inline-block">
-                                        <!-- Download SVG icon from http://tabler.io/icons/icon/package -->
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round" class="icon icon-1">
-                                            <path d="M12 3l8 4.5l0 9l-8 4.5l-8 -4.5l0 -9l8 -4.5" />
-                                            <path d="M12 12l8 -4.5" />
-                                            <path d="M12 12l0 9" />
-                                            <path d="M12 12l-8 -4.5" />
-                                            <path d="M16 5.25l-8 4.5" />
-                                        </svg>
-                                    </span>
-                                    <span class="nav-link-title">
-                                        User Settings
-                                    </span>
-                                </a>
-                                <div class="dropdown-menu">
-                                    <div class="dropdown-menu-columns">
-                                        <div class="dropdown-menu-column">
-                                            <a class="dropdown-item" href="{{ route('MgtMpaUsers') }}">
-                                                MPA Users
-                                            </a>
-                                            <a class="dropdown-item" href="{{ route('MgtEcsaUsers') }}">
-                                                ECSA-HC Users
-                                            </a>
-
+                                <!-- User Settings -->
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#navbar-base" data-bs-toggle="dropdown"
+                                        data-bs-auto-close="outside" role="button" aria-expanded="false">
+                                        <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                            <i class="fa-solid fa-user-gear"></i>
+                                        </span>
+                                        <span class="nav-link-title">User Settings</span>
+                                    </a>
+                                    <div class="dropdown-menu">
+                                        <div class="dropdown-menu-columns">
+                                            <div class="dropdown-menu-column">
+                                                <a class="dropdown-item" href="{{ route('MgtMpaUsers') }}">MPA Users</a>
+                                                <a class="dropdown-item" href="{{ route('MgtEcsaUsers') }}">ECSA-HC
+                                                    Users</a>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </li>
+                                </li>
 
+                                <!-- Indicators -->
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#navbar-base" data-bs-toggle="dropdown"
+                                        data-bs-auto-close="outside" role="button" aria-expanded="false">
+                                        <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                            <i class="fa-solid fa-chart-line"></i>
+                                        </span>
+                                        <span class="nav-link-title">Indicators</span>
+                                    </a>
+                                    <div class="dropdown-menu">
+                                        <div class="dropdown-menu-columns">
+                                            <div class="dropdown-menu-column">
+                                                <a class="dropdown-item" href="{{ route('MgtSO') }}">ECSA-HC Strategic
+                                                    Objectives</a>
+                                                <a class="dropdown-item"
+                                                    href="{{ route('mpaIndicators.SelectEntity') }}">MPA CRF
+                                                    Indicators</a>
+                                                <a class="dropdown-item"
+                                                    href="{{ route('mpaRRF.ShowRRFIndicators') }}">MPA RRF
+                                                    Indicators</a>
+                                                <a class="dropdown-item" href="{{ route('SelectSo') }}">ECSA-HC
+                                                    Indicators</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            @endif
 
+                            <!-- File Report (visible to all) -->
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#navbar-base" data-bs-toggle="dropdown"
                                     data-bs-auto-close="outside" role="button" aria-expanded="false">
                                     <span class="nav-link-icon d-md-none d-lg-inline-block">
-                                        <!-- Download SVG icon from http://tabler.io/icons/icon/package -->
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                            viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                            class="icon icon-1">
-                                            <path d="M12 3l8 4.5l0 9l-8 4.5l-8 -4.5l0 -9l8 -4.5" />
-                                            <path d="M12 12l8 -4.5" />
-                                            <path d="M12 12l0 9" />
-                                            <path d="M12 12l-8 -4.5" />
-                                            <path d="M16 5.25l-8 4.5" />
-                                        </svg>
+                                        <i class="fa-solid fa-file-export"></i>
                                     </span>
-                                    <span class="nav-link-title">
-                                        Indicators
-                                    </span>
+                                    <span class="nav-link-title">File Report</span>
                                 </a>
                                 <div class="dropdown-menu">
                                     <div class="dropdown-menu-columns">
                                         <div class="dropdown-menu-column">
-
-
-                                            <a class="dropdown-item" href="{{ route('MgtSO') }}">
-                                                ECSA-HC Strategic Objectives
-                                            </a>
-                                            <a class="dropdown-item" href="{{ route('mpaIndicators.SelectEntity') }}">
-                                                MPA CRF Indicators
-                                            </a>
-
-
-
-
-                                            <a class="dropdown-item" href="{{ route('mpaIndicators.SelectEntity') }}">
-                                                MPA RRF Indicators
-                                            </a>
-                                            <a class="dropdown-item" href="{{ route('SelectSo') }}">
-                                                ECSA-HC Indicators
-                                            </a>
-
-
+                                            <a class="dropdown-item" href="{{ route('Ecsa_SelectUser') }}">ECSA-HC
+                                                Reports</a>
+                                            {{-- <a class="dropdown-item" href="{{ route('Ecsa_SelectUser') }}">MPA
+                                                Reports</a> --}}
                                         </div>
                                     </div>
                                 </div>
                             </li>
 
+                            <!-- Analytics and Report (visible to all) -->
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#navbar-base" data-bs-toggle="dropdown"
                                     data-bs-auto-close="outside" role="button" aria-expanded="false">
                                     <span class="nav-link-icon d-md-none d-lg-inline-block">
-                                        <!-- Download SVG icon from http://tabler.io/icons/icon/package -->
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                            viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                            class="icon icon-1">
-                                            <path d="M12 3l8 4.5l0 9l-8 4.5l-8 -4.5l0 -9l8 -4.5" />
-                                            <path d="M12 12l8 -4.5" />
-                                            <path d="M12 12l0 9" />
-                                            <path d="M12 12l-8 -4.5" />
-                                            <path d="M16 5.25l-8 4.5" />
-                                        </svg>
+                                        <i class="fa-solid fa-chart-pie"></i>
                                     </span>
-                                    <span class="nav-link-title">
-                                        File Report
-                                    </span>
+                                    <span class="nav-link-title">Analytics and Report</span>
                                 </a>
                                 <div class="dropdown-menu">
                                     <div class="dropdown-menu-columns">
                                         <div class="dropdown-menu-column">
-                                            <a class="dropdown-item" href="./accordion.html">
-                                                MPA Reports
-                                            </a>
-                                            <a class="dropdown-item" href="./alerts.html">
-                                                ECSA-HC Reports
-                                            </a>
-
+                                            <a class="dropdown-item"
+                                                href="{{ route('Reportselectcluster') }}">ECSA-HC Indicators
+                                                Perfomance</a>
+                                            <a class="dropdown-item" href="{{ route('Ecsa_SO_selectYear') }}">ECSA-HC
+                                                SO Perfomance</a>
+                                            <a class="dropdown-item" href="{{ route('Ecsa_CP_selectYear') }}">ECSA-HC
+                                                Cluster Perfomance</a>
                                         </div>
                                     </div>
                                 </div>
@@ -211,7 +158,6 @@
 
                         </ul>
                     </div>
-
                 </div>
             </div>
         </div>

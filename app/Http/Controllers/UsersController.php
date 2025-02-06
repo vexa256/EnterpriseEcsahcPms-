@@ -9,7 +9,7 @@ class UsersController extends Controller
     {
         $users = DB::table('users as U')
             ->join('mpa_entities as E', 'E.EntityID', '=', 'U.EntityID')
-            ->where('U.UserTyoe', 'MPA')
+            ->where('U.UserType', 'MPA')
             ->select('U.*', 'E.Entity')
             ->get();
 
@@ -31,7 +31,7 @@ class UsersController extends Controller
     {
         $users = DB::table('users as U')
             ->join('clusters as C', 'C.ClusterID', '=', 'U.ClusterID')
-            ->where('U.UserTyoe', 'ECSA-HC')
+            ->where('U.UserType', 'ECSA-HC')
             ->select('U.*', 'C.Cluster_Name')
             ->get();
 

@@ -24,7 +24,72 @@
 <script src="{{ asset('dist/libs/tom-select/dist/js/tom-select.base.min.js?1738096684') }}" defer></script>
 
 
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+<style>
+    .animated-background {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        background: linear-gradient(45deg, #f3f3f3, #e9ecef);
+        background-size: 400% 400%;
+        animation: gradientBG 15s ease infinite;
+    }
+
+    @keyframes gradientBG {
+        0% {
+            background-position: 0% 50%;
+        }
+
+        50% {
+            background-position: 100% 50%;
+        }
+
+        100% {
+            background-position: 0% 50%;
+        }
+    }
+
+    .form-floating-custom {
+        position: relative;
+    }
+
+    .form-floating-icon {
+        position: absolute;
+        top: 50%;
+        right: 10px;
+        transform: translateY(-50%);
+        color: #6c757d;
+    }
+
+    .btn-pill {
+        border-radius: 50px;
+    }
+
+    .report-selection-form {
+        transition: all 0.3s ease;
+    }
+
+    .report-selection-form:hover {
+        transform: translateY(-5px);
+    }
+
+    .card {
+        transition: all 0.3s ease;
+    }
+
+    .card:hover {
+        box-shadow: 0 1rem 3rem rgba(0, 0, 0, .175) !important;
+    }
+</style>
 <style>
     .dt-info {
 

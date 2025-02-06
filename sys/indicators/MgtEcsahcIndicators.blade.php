@@ -28,10 +28,11 @@
                             <th>Number</th>
                             <th>Indicator</th>
                             <th>Baseline (2023/2024)</th>
-                            <th> Year 1</th>
-                            <th> Year 2</th>
-                            <th> Year 3</th>
-                            <th> Cluster(s)</th>
+                            <th>Year 1</th>
+                            <th>Year 2</th>
+                            <th>Year 3</th>
+                            <th>Response Type</th>
+                            <th>Cluster(s)</th>
                             <th class="w-1">Actions</th>
                         </tr>
                     </thead>
@@ -44,6 +45,7 @@
                                 <td>{{ $indicator->Target_Year1 }}</td>
                                 <td>{{ $indicator->Target_Year2 }}</td>
                                 <td>{{ $indicator->Target_Year3 }}</td>
+                                <td>{{ $indicator->ResponseType }}</td>
                                 <td>{{ $indicator->Responsible_Cluster }}</td>
                                 <td>
                                     <div class="btn-list flex-nowrap">
@@ -97,6 +99,8 @@
 
                     <!-- Hidden: Strategic Objective ID -->
                     <input type="hidden" name="StrategicObjectiveID" value="{{ $StrategicObjectiveID }}">
+                    <input type="hidden" name="IndicatorID"
+                        value="{{ md5(md5(uniqid() . date('now') . $StrategicObjectiveID)) }}">
 
                     <!-- Indicator Number -->
                     <div class="col-4 mb-3">
@@ -133,6 +137,17 @@
                     <div class="col-4 mb-3">
                         <label for="Target_Year3" class="form-label">Target Year 3</label>
                         <input type="number" class="form-control" id="Target_Year3" name="Target_Year3">
+                    </div>
+
+                    <!-- Response Type -->
+                    <div class="col-4 mb-3">
+                        <label for="ResponseType" class="form-label">Response Type</label>
+                        <select class="form-select" id="ResponseType" name="ResponseType" required>
+                            <option value="Text">Text</option>
+                            <option value="Number">Number</option>
+                            <option value="Boolean">Boolean</option>
+                            <option value="Yes/No">Yes/No</option>
+                        </select>
                     </div>
 
                     <!-- Responsible Cluster(s) (TomSelect) -->
@@ -260,11 +275,24 @@
                                 value="{{ $indicator->Target_Year3 }}">
                         </div>
 
+                        <!-- Response Type -->
+                        <div class="col-4 mb-3">
+                            <label for="ResponseType" class="form-label">Response Type</label>
+                            <select class="form-select" id="ResponseType" name="ResponseType" required>
+                                <option value="Text" @if ($indicator->ResponseType == 'Text') selected @endif>Text</option>
+                                <option value="Number" @if ($indicator->ResponseType == 'Number') selected @endif>Number
+                                </option>
+                                <option value="Boolean" @if ($indicator->ResponseType == 'Boolean') selected @endif>Boolean
+                                </option>
+                                <option value="Yes/No" @if ($indicator->ResponseType == 'Yes/No') selected @endif>Yes/No
+                                </option>
+                            </select>
+                        </div>
+
                         <!-- Responsible Cluster(s) -->
                         @php
                             // Decode the existing JSON so we know which clusters to mark as selected
                             $existingClusters = json_decode($indicator->Responsible_Cluster, true) ?? [];
-
                         @endphp
                         <div class="col-4 mb-3">
                             <label class="form-label">Responsible Cluster(s)</label>

@@ -1,16 +1,218 @@
 <?php
 
+use App\Http\Controllers\ClusterPerformanceBreakdownController;
 use App\Http\Controllers\Clusters;
 use App\Http\Controllers\CrudController;
 use App\Http\Controllers\EcsahcTimelines;
+use App\Http\Controllers\EcsaIndicatorPerformanceController;
+use App\Http\Controllers\EcsaReportingController;
 use App\Http\Controllers\EntitiesController;
 use App\Http\Controllers\IndicatorsController;
 use App\Http\Controllers\MpaIndicatorsController;
+use App\Http\Controllers\MpaRRFController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\StrategicObjectivePerfomance;
 use App\Http\Controllers\UsersController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth'])->group(function () {
+
+    Route::get('/Ecsa_CP_selectYear', [ClusterPerformanceBreakdownController::class, 'Ecsa_CP_selectYear'])
+        ->name('Ecsa_CP_selectYear');
+
+    Route::get('/Ecsa_CP_selectReport', [ClusterPerformanceBreakdownController::class, 'Ecsa_CP_selectReport'])
+        ->name('Ecsa_CP_selectReport');
+
+    Route::get('/Ecsa_CP_showPerformance', [ClusterPerformanceBreakdownController::class, 'Ecsa_CP_showPerformance'])
+        ->name('Ecsa_CP_showPerformance');
+
+    Route::get('/Ecsa_CP_exportCsv', [ClusterPerformanceBreakdownController::class, 'Ecsa_CP_exportCsv'])
+        ->name('Ecsa_CP_exportCsv');
+
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+
+    Route::get('/Ecsa_SO_selectYear', [StrategicObjectivePerfomance::class, 'Ecsa_SO_selectYear'])
+        ->name('Ecsa_SO_selectYear');
+
+    Route::get('/Ecsa_SO_selectReport', [StrategicObjectivePerfomance::class, 'Ecsa_SO_selectReport'])
+        ->name('Ecsa_SO_selectReport');
+
+    Route::get('/Ecsa_SO_showPerformance', [StrategicObjectivePerfomance::class, 'Ecsa_SO_showPerformance'])
+        ->name('Ecsa_SO_showPerformance');
+
+    Route::get('/Ecsa_SO_exportCsv', [StrategicObjectivePerfomance::class, 'Ecsa_SO_exportCsv'])
+        ->name('Ecsa_SO_exportCsv');
+
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+
+    Route::get('/Reportselectcluster', [EcsaIndicatorPerformanceController::class, 'selectCluster'])->name('Reportselectcluster');
+
+    Route::get('/', [EcsaIndicatorPerformanceController::class, 'selectCluster'])->name('dashboard');
+
+    Route::get('/dashboard', [EcsaIndicatorPerformanceController::class, 'selectCluster'])->name('home');
+
+    Route::post('/select-year', [EcsaIndicatorPerformanceController::class, 'selectYear'])->name('select-year');
+    Route::post('/select-report', [EcsaIndicatorPerformanceController::class, 'selectReport'])->name('select-report');
+    Route::post('/performance-overview', [EcsaIndicatorPerformanceController::class, 'showPerformance'])->name('performance-overview');
+    Route::get('/export-csv', [EcsaIndicatorPerformanceController::class, 'exportCsv'])->name('export-csv');
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+
+// Grouping under an 'ecsa' URI prefix for clarity.
+    Route::prefix('ecsa')->group(function () {
+
+        // GET route for selecting a user.
+        Route::get('select-user', [EcsaReportingController::class, 'SelectUser'])
+            ->name('Ecsa_SelectUser');
+
+        // POST route for selecting a cluster.
+        Route::any('select-cluster', [EcsaReportingController::class, 'SelectCluster'])
+            ->name('Ecsa_SelectCluster');
+
+        // POST route for selecting a timeline.
+        Route::any('select-timeline', [EcsaReportingController::class, 'SelectTimeline'])
+            ->name('Ecsa_SelectTimeline');
+
+        // POST route for selecting a strategic objective.
+        Route::any('select-strategic-objective', [EcsaReportingController::class, 'SelectStrategicObjective'])
+            ->name('Ecsa_SelectStrategicObjective');
+
+        // POST route for reporting performance indicators.
+        Route::any('report-performance-indicators', [EcsaReportingController::class, 'ReportPerformanceIndicators'])
+            ->name('Ecsa_ReportPerformanceIndicators');
+
+        // POST route for saving the performance report.
+        Route::any('save-performance-report', [EcsaReportingController::class, 'SavePerformanceReport'])
+            ->name('Ecsa_SavePerformanceReport');
+
+        // POST route for getting the reporting summary.
+        Route::any('get-reporting-summary', [EcsaReportingController::class, 'GetReportingSummary'])
+            ->name('Ecsa_GetReportingSummary');
+    });
+
+    // Route::any('/select-user', [EcsaReportingController::class, 'SelectUser'])->name('SelectUser');
+
+    // Route::any('/select-cluster', [EcsaReportingController::class, 'SelectCluster'])->name('SelectCluster');
+
+    // Route::any('/select-timeline', [EcsaReportingController::class, 'SelectTimeline'])->name('SelectTimeline');
+
+    // Route::any('/select-strategic-objective', [EcsaReportingController::class, 'SelectStrategicObjective'])->name('SelectStrategicObjective');
+
+    // Route::any('/report-performance-indicators', [EcsaReportingController::class, 'ReportPerformanceIndicators'])->name('ReportPerformanceIndicators');
+
+    // Route::any('/save-performance-report', [EcsaReportingController::class, 'SavePerformanceReport'])->name('SavePerformanceReport');
+
+    // New routes
+    Route::post('/mark-indicators-not-applicable', [EcsaReportingController::class, 'MarkIndicatorsNotApplicable'])->name('MarkIndicatorsNotApplicable');
+
+    Route::get('/get-reporting-summary', [EcsaReportingController::class, 'GetReportingSummary'])->name('GetReportingSummary');
+
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+
+    Route::get('/MgtEcsaTimelinesStatus', [EcsahcTimelines::class, 'MgtEcsaTimelinesStatus'])
+        ->name('MgtEcsaTimelinesStatus');
+
+    Route::get('/MgtMpaTimelinesStatus', [EcsahcTimelines::class, 'MgtMpaTimelinesStatus'])
+        ->name('MgtMpaTimelinesStatus');
+
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+
+    // Display all RRF Indicators
+    Route::get('/mpa-rrf-indicators', [MpaRRFController::class, 'ShowRRFIndicators'])
+        ->name('mpaRRF.ShowRRFIndicators');
+
+    // Create / Store a new RRF Indicator
+    Route::post('/mpa-rrf-indicators/store', [MpaRRFController::class, 'StoreRRFIndicator'])
+        ->name('mpaRRF.StoreRRFIndicator');
+
+    // Update an RRF Indicator
+    Route::put('/mpa-rrf-indicators/update', [MpaRRFController::class, 'UpdateRRFIndicator'])
+        ->name('mpaRRF.UpdateRRFIndicator');
+
+    // Delete an RRF Indicator
+    Route::delete('/mpa-rrf-indicators/delete', [MpaRRFController::class, 'DeleteRRFIndicator'])
+        ->name('mpaRRF.DeleteRRFIndicator');
+
+//
+//
+//
+//
+//
+//
+//
+//
 
 // Step 1: Display entity selection
     Route::get('/mpa-indicators/select-entity', [MpaIndicatorsController::class, 'SelectEntity'])
@@ -78,13 +280,6 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/MgtEntities', [EntitiesController::class, 'MgtEntities'])->name('MgtEntities');
 });
-Route::get('/', function () {
-    return view('scrn');
-});
-
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

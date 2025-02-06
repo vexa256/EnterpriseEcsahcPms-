@@ -13,14 +13,18 @@ return new class extends Migration
     {
         Schema::create('performance_indicators', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('SO_ID');               // Foreign Key to StrategicObjectives
+            $table->string('SO_ID');                           // Foreign Key to StrategicObjectives
             $table->string('Indicator_Number', 10);            // Indicator Number (e.g., "1", "2")
             $table->string('Indicator_Name', 255);             // Name of the Performance Indicator
             $table->integer('Baseline_2023_2024')->nullable(); // Baseline Value
             $table->integer('Target_Year1')->nullable();       // Target for Year 1
             $table->integer('Target_Year2')->nullable();       // Target for Year 2
             $table->integer('Target_Year3')->nullable();       // Target for Year 3
-            $table->json('Responsible_Cluster');               // Responsible Clusters/Programs/Projects
+            $table->enum('ResponseType', ['Text', 'Number', 'Boolean', 'Yes/No']);
+            $table->json('Responsible_Cluster');
+            // $table->enum('ReportingPeriod', ['Quarterly', 'Bi-Annual', 'Annually', 'Routine'])->nullable();
+
+            // Responsible Clusters/Programs/Projects
             $table->timestamps();
         });
     }

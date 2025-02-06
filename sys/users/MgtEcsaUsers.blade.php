@@ -122,7 +122,7 @@
                     <div class="row mt-3">
                         <!-- Row 3 -->
                         <div class="col-6">
-                            <input type="hidden" name="UserTyoe" value="ECSA-HC">
+                            <input type="hidden" name="UserType" value="ECSA-HC">
                         </div>
                         <div class="col-4 d-none">
                             <label for="UserCode" class="form-label">User Code</label>
@@ -372,7 +372,7 @@
                                 </tr>
                                 <tr>
                                     <th>User Type</th>
-                                    <td>{{ $user->UserTyoe }}</td>
+                                    <td>{{ $user->UserType }}</td>
 
                                 </tr>
                                 <tr>

@@ -27,6 +27,7 @@
                             <th>Report Name</th>
                             <th>Type</th>
                             <th>Year</th>
+                            <th>Closing Date</th>
                             <th>Status</th>
                             <th>Last Bi-Annual</th>
                             <th class="w-1">Actions</th>
@@ -39,6 +40,7 @@
                                 <td>{{ $timeline->ReportName }}</td>
                                 <td>{{ $timeline->Type }}</td>
                                 <td>{{ $timeline->Year }}</td>
+                                <td>{{ \Carbon\Carbon::parse($timeline->ClosingDate)->format('Y-m-d') }}</td>
                                 <td>
                                     <span
                                         class="badge text-light bg-{{ $timeline->status == 'Completed' ? 'success' : ($timeline->status == 'In Progress' ? 'warning' : 'danger') }}">
@@ -46,8 +48,8 @@
                                     </span>
                                 </td>
                                 <td>
-                                    @if ($timeline->Type == 'Bi-Annual')
-                                        {{ $timeline->LastBiAnnual ? 'Yes' : 'No' }}
+                                    @if ($timeline->Type == 'Bi-Annual Reports')
+                                        {{ $timeline->LastBiAnnual }}
                                     @else
                                         -
                                     @endif
@@ -67,8 +69,7 @@
                                             style="display: inline;">
                                             @csrf
                                             @method('DELETE')
-
-                                            <input type="hidden" name="TableName" value="mpa_timelines">
+                                            <input type="hidden" name="TableName" value="ecsahc_timelines">
                                             <input type="hidden" name="id" value="{{ $timeline->id }}">
                                             <button type="button" class="btn btn-sm btn-danger"
                                                 onclick="confirmDelete('{{ $timeline->id }}')">
@@ -81,7 +82,7 @@
                             </tr>
                         @empty
                             {{-- <tr>
-                                <td colspan="7" class="text-center">No timelines found.</td>
+                                <td colspan="8" class="text-center">No timelines found.</td>
                             </tr> --}}
                         @endforelse
                     </tbody>
@@ -117,9 +118,9 @@
                     <div class="mb-3">
                         <label for="Type" class="form-label">Type</label>
                         <select class="form-control type-select" id="Type" name="Type" required>
-                            <option value="Quarterly">Quarterly</option>
-                            <option value="Bi-Annual">Bi-Annual</option>
-                            <option value="Annual">Annual</option>
+                            <option value="Quarterly Reports">Quarterly Reports</option>
+                            <option value="Bi-Annual Reports">Bi-Annual Reports</option>
+                            <option value="Annual Reports">Annual Reports</option>
                         </select>
                     </div>
                     <div class="mb-3">
@@ -132,6 +133,10 @@
                             pattern="\d{4}" required>
                     </div>
                     <div class="mb-3">
+                        <label for="ClosingDate" class="form-label">Closing Date</label>
+                        <input type="date" class="form-control" id="ClosingDate" name="ClosingDate" required>
+                    </div>
+                    <div class="mb-3">
                         <label for="status" class="form-label">Status</label>
                         <select class="form-control" id="status" name="status" required>
                             <option value="Pending">Pending</option>
@@ -141,9 +146,9 @@
                     </div>
                     <div class="mb-3 form-check last-biannual-wrapper">
                         <!-- Hidden input ensures a value is submitted when checkbox is unchecked -->
-                        <input type="hidden" name="LastBiAnnual" value="0">
+                        <input type="hidden" name="LastBiAnnual" value="No">
                         <input type="checkbox" class="form-check-input" id="LastBiAnnual" name="LastBiAnnual"
-                            value="1">
+                            value="Yes">
                         <label class="form-check-label" for="LastBiAnnual">Last Bi-Annual</label>
                     </div>
                 </form>
@@ -174,7 +179,6 @@
                         @method('PUT')
                         <div class="mb-3">
                             <input type="hidden" name="TableName" value="ecsahc_timelines">
-
                             <input type="hidden" name="id" value="{{ $timeline->id }}">
                             <label for="ReportName-{{ $timeline->id }}" class="form-label">Report Name</label>
                             <input type="text" class="form-control" id="ReportName-{{ $timeline->id }}"
@@ -185,12 +189,15 @@
                             <label for="editType-{{ $timeline->id }}" class="form-label">Type</label>
                             <select class="form-control type-select" id="editType-{{ $timeline->id }}"
                                 name="Type" required>
-                                <option value="Quarterly" {{ $timeline->Type == 'Quarterly' ? 'selected' : '' }}>
-                                    Quarterly</option>
-                                <option value="Bi-Annual" {{ $timeline->Type == 'Bi-Annual' ? 'selected' : '' }}>
-                                    Bi-Annual</option>
-                                <option value="Annual" {{ $timeline->Type == 'Annual' ? 'selected' : '' }}>Annual
-                                </option>
+                                <option value="Quarterly Reports"
+                                    {{ $timeline->Type == 'Quarterly Reports' ? 'selected' : '' }}>
+                                    Quarterly Reports</option>
+                                <option value="Bi-Annual Reports"
+                                    {{ $timeline->Type == 'Bi-Annual Reports' ? 'selected' : '' }}>
+                                    Bi-Annual Reports</option>
+                                <option value="Annual Reports"
+                                    {{ $timeline->Type == 'Annual Reports' ? 'selected' : '' }}>
+                                    Annual Reports</option>
                             </select>
                         </div>
                         <div class="mb-3">
@@ -201,6 +208,11 @@
                             <label for="Year-{{ $timeline->id }}" class="form-label">Year</label>
                             <input type="text" class="form-control" id="Year-{{ $timeline->id }}" name="Year"
                                 value="{{ $timeline->Year }}" maxlength="4" pattern="\d{4}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="ClosingDate-{{ $timeline->id }}" class="form-label">Closing Date</label>
+                            <input type="date" class="form-control" id="ClosingDate-{{ $timeline->id }}"
+                                name="ClosingDate" value="{{ $timeline->ClosingDate }}" required>
                         </div>
                         <div class="mb-3">
                             <label for="status-{{ $timeline->id }}" class="form-label">Status</label>
@@ -215,10 +227,10 @@
                         </div>
                         <div class="mb-3 form-check last-biannual-wrapper">
                             <!-- Hidden input ensures a value is submitted when checkbox is unchecked -->
-                            <input type="hidden" name="LastBiAnnual" value="0">
+                            <input type="hidden" name="LastBiAnnual" value="No">
                             <input type="checkbox" class="form-check-input"
-                                id="editLastBiAnnual-{{ $timeline->id }}" name="LastBiAnnual" value="1"
-                                {{ $timeline->LastBiAnnual ? 'checked' : '' }}>
+                                id="editLastBiAnnual-{{ $timeline->id }}" name="LastBiAnnual" value="Yes"
+                                {{ $timeline->LastBiAnnual == 'Yes' ? 'checked' : '' }}>
                             <label class="form-check-label" for="editLastBiAnnual-{{ $timeline->id }}">Last
                                 Bi-Annual</label>
                         </div>
@@ -265,7 +277,7 @@
             if (!wrapper) return;
 
             function toggleWrapper() {
-                if (selectElem.value === 'Bi-Annual') {
+                if (selectElem.value === 'Bi-Annual Reports') {
                     wrapper.style.display = 'block';
                 } else {
                     wrapper.style.display = 'none';

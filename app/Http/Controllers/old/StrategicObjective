@@ -1,0 +1,236 @@
+<?php
+namespace App\Http\Controllers;
+
+use App\Models\Cluster;
+use App\Models\ClusterPerformanceMapping;
+use App\Models\PerformanceIndicator;
+use App\Models\StrategicObjective;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+
+class StrategicObjectivePerformanceController extends Controller
+{
+    private function validateAndRedirect(Request $request, array $rules)
+    {
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+        return null;
+    }
+
+    public function index(Request $request)
+    {
+        $redirectResult = $this->validateAndRedirect($request, [
+            'reporting_period' => 'nullable|in:Quarterly,Bi-Annual,Annual',
+            'clusters'         => 'nullable|array',
+            'clusters.*'       => 'exists:clusters,ClusterID',
+            'indicator_type'   => 'nullable|in:all,Text,Number,Boolean,Yes/No',
+        ]);
+
+        if ($redirectResult) {
+            return $redirectResult;
+        }
+
+        $reportingPeriod  = $request->input('reporting_period', 'Annual');
+        $selectedClusters = $request->input('clusters', []);
+        $indicatorType    = $request->input('indicator_type', 'all');
+        $currentYear      = date('Y');
+
+        $strategicObjectives = StrategicObjective::all();
+        $performanceData     = $this->getPerformanceData($strategicObjectives, $reportingPeriod, $selectedClusters, $indicatorType, $currentYear);
+
+        $clusters       = Cluster::all();
+        $indicatorTypes = ['Text', 'Number', 'Boolean', 'Yes/No'];
+
+        return view('EcsaReporting.StrategicObjectivePerformance', [
+            'performanceData'  => $performanceData,
+            'clusters'         => $clusters,
+            'indicatorTypes'   => $indicatorTypes,
+            'reportingPeriod'  => $reportingPeriod,
+            'selectedClusters' => $selectedClusters,
+            'indicatorType'    => $indicatorType,
+            'currentYear'      => $currentYear,
+        ]);
+    }
+
+    private function getPerformanceData($strategicObjectives, $reportingPeriod, $selectedClusters, $indicatorType, $currentYear)
+    {
+        $performanceData = [];
+
+        foreach ($strategicObjectives as $objective) {
+            $indicators = $this->getIndicators($objective->StrategicObjectiveID, $selectedClusters, $indicatorType);
+
+            $performingCount    = 0;
+            $nonPerformingCount = 0;
+            $totalReported      = 0;
+            $totalTarget        = 0;
+            $indicatorDetails   = [];
+
+            foreach ($indicators as $indicator) {
+                $reportedValue = $this->getReportedValue($indicator->id, $reportingPeriod, $currentYear);
+                $targetValue   = $this->getTargetValue($indicator, $currentYear);
+
+                $totalReported += $reportedValue;
+                $totalTarget += $targetValue;
+
+                $isPerforming = $reportedValue >= $targetValue;
+                if ($isPerforming) {
+                    $performingCount++;
+                } else {
+                    $nonPerformingCount++;
+                }
+
+                $indicatorDetails[] = [
+                    'id'            => $indicator->id,
+                    'name'          => $indicator->Indicator_Name,
+                    'number'        => $indicator->Indicator_Number,
+                    'responseType'  => $indicator->ResponseType,
+                    'reportedValue' => $reportedValue,
+                    'targetValue'   => $targetValue,
+                    'isPerforming'  => $isPerforming,
+                ];
+            }
+
+            $performancePercentage = $totalTarget > 0 ? ($totalReported / $totalTarget) * 100 : 0;
+
+            $performanceData[$objective->StrategicObjectiveID] = [
+                'name'                  => $objective->SO_Name,
+                'description'           => $objective->Description,
+                'indicatorCount'        => count($indicators),
+                'performingCount'       => $performingCount,
+                'nonPerformingCount'    => $nonPerformingCount,
+                'performancePercentage' => round($performancePercentage, 2),
+                'totalReported'         => $totalReported,
+                'totalTarget'           => $totalTarget,
+                'indicators'            => $indicatorDetails,
+            ];
+        }
+
+        return $performanceData;
+    }
+
+    private function getIndicators($strategicObjectiveID, $selectedClusters, $indicatorType)
+    {
+        $query = PerformanceIndicator::where('StrategicObjectiveID', $strategicObjectiveID);
+
+        if (! empty($selectedClusters)) {
+            $query->where(function ($q) use ($selectedClusters) {
+                foreach ($selectedClusters as $cluster) {
+                    $q->orWhereJsonContains('Responsible_Cluster', $cluster);
+                }
+            });
+        }
+
+        if ($indicatorType !== 'all') {
+            $query->where('ResponseType', $indicatorType);
+        }
+
+        return $query->get();
+    }
+
+    private function getReportedValue($indicatorID, $reportingPeriod, $year)
+    {
+        $query = ClusterPerformanceMapping::where('IndicatorID', $indicatorID)
+            ->whereYear('created_at', $year);
+
+        if ($reportingPeriod === 'Quarterly') {
+            $query->whereRaw("ReportingID LIKE 'Q%-$year-%'");
+        } elseif ($reportingPeriod === 'Bi-Annual') {
+            $query->whereRaw("ReportingID LIKE 'H%-$year-%'");
+        } else { // Annual
+            $query->whereRaw("ReportingID LIKE 'Annual-$year-%'");
+        }
+
+        return $query->sum('Response');
+    }
+
+    private function getTargetValue($indicator, $year)
+    {
+        $yearDiff = $year - 2024; // Assuming 2024 is Year 1
+        if ($yearDiff <= 0) {
+            return $indicator->Target_Year1 ?? 0;
+        } elseif ($yearDiff == 1) {
+            return $indicator->Target_Year2 ?? 0;
+        } else {
+            return $indicator->Target_Year3 ?? 0;
+        }
+    }
+
+    public function viewIndicatorDetails(Request $request)
+    {
+        $redirectResult = $this->validateAndRedirect($request, [
+            'strategic_objective_id' => 'required|exists:strategic_objectives,StrategicObjectiveID',
+            'indicator_id'           => 'required|exists:performance_indicators,id',
+        ]);
+
+        if ($redirectResult) {
+            return $redirectResult;
+        }
+
+        $strategicObjective = StrategicObjective::findOrFail($request->strategic_objective_id);
+        $indicator          = PerformanceIndicator::findOrFail($request->indicator_id);
+
+        $responsibleClusters = Cluster::whereIn('ClusterID', json_decode($indicator->Responsible_Cluster))->get();
+
+        $reportingHistory = ClusterPerformanceMapping::where('IndicatorID', $indicator->id)
+            ->join('ecsahc_timelines', 'cluster_performance_mappings.ReportingID', '=', 'ecsahc_timelines.ReportingID')
+            ->join('users', 'cluster_performance_mappings.UserID', '=', 'users.UserID')
+            ->select('cluster_performance_mappings.*', 'ecsahc_timelines.ReportName', 'users.name as reporter_name')
+            ->orderBy('cluster_performance_mappings.created_at', 'desc')
+            ->get();
+
+        return view('EcsaReporting.IndicatorDetails', [
+            'strategicObjective'  => $strategicObjective,
+            'indicator'           => $indicator,
+            'responsibleClusters' => $responsibleClusters,
+            'reportingHistory'    => $reportingHistory,
+        ]);
+    }
+
+    public function exportPerformanceReport(Request $request)
+    {
+        $redirectResult = $this->validateAndRedirect($request, [
+            'reporting_period' => 'required|in:Quarterly,Bi-Annual,Annual',
+            'clusters'         => 'nullable|array',
+            'clusters.*'       => 'exists:clusters,ClusterID',
+            'indicator_type'   => 'required|in:all,Text,Number,Boolean,Yes/No',
+        ]);
+
+        if ($redirectResult) {
+            return $redirectResult;
+        }
+
+        $reportingPeriod  = $request->input('reporting_period', 'Annual');
+        $selectedClusters = $request->input('clusters', []);
+        $indicatorType    = $request->input('indicator_type', 'all');
+        $currentYear      = date('Y');
+
+        $strategicObjectives = StrategicObjective::all();
+        $performanceData     = $this->getPerformanceData($strategicObjectives, $reportingPeriod, $selectedClusters, $indicatorType, $currentYear);
+
+        $csvContent = $this->generateCsvContent($performanceData);
+
+        $headers = [
+            'Content-Type'        => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="strategic_objective_performance_report.csv"',
+        ];
+
+        return response($csvContent, 200, $headers);
+    }
+
+    private function generateCsvContent($performanceData)
+    {
+        $csvContent = "Strategic Objective,Description,Total Indicators,Performing Indicators,Non-Performing Indicators,Performance Percentage\n";
+
+        foreach ($performanceData as $objectiveId => $data) {
+            $csvContent .= '"' . $data['name'] . '","' . $data['description'] . '",' .
+                $data['indicatorCount'] . ',' .
+                $data['performingCount'] . ',' .
+                $data['nonPerformingCount'] . ',' .
+                $data['performancePercentage'] . "%\n";
+        }
+
+        return $csvContent;
+    }
+}

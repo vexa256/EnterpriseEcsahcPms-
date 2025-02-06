@@ -13,7 +13,7 @@ class MpaIndicatorsController extends Controller
     public function SelectEntity()
     {
         $data = [
-            "Desc"     => "Select an Entity to Manage MPA Indicators",
+            "Desc"     => "Select an Entity to Manage MPA Indicators Attcahed to It",
             "Page"     => "indicators.SelectEntity", // The Blade partial to include in scrn
             "entities" => DB::table("mpa_entities")->get(),
         ];
@@ -55,7 +55,7 @@ class MpaIndicatorsController extends Controller
 
         // Return data in the required format
         $data = [
-            "Desc"           => "Manage Indicators for " . $entity->Entity,
+            "Desc"           => "Manage  CRF Indicators for " . $entity->Entity,
             "Page"           => "indicators.MgtMpaIndicators",
             "entities"       => DB::table("mpa_entities")->get(), // If your layout needs all entities
                                                                   // Additional data needed by the partial

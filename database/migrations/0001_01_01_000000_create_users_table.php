@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('password')->nullable();
             $table->string('EntityID', 255)->nullable();
             $table->string('ClusterID', 255)->nullable();
-            $table->enum('UserTyoe', ['MPA', 'ECSA-HC'])->default('ECSA-HC');
+            $table->enum('UserType', ['MPA', 'ECSA-HC'])->default('ECSA-HC');
             $table->string('UserCode', 255)->unique()->nullable();
             $table->string('Phone', 20)->nullable();
             $table->string('Nationality', 100)->nullable();

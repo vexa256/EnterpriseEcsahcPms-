@@ -13,15 +13,16 @@ return new class extends Migration
     {
         Schema::create('ecsahc_timelines', function (Blueprint $table) {
             $table->id();
-            // $table->id();
-            // $table->string('id', 50)->primary();
+
             $table->string('ReportName', 255);
-            $table->string('Type', 255);
+            $table->enum('Type', ['Quarterly Reports', 'Annual Reports', 'Bi-Annual Reports']);
             $table->text('Description')->nullable();
             $table->string('ReportingID', 255);
-            $table->string('Year', 4);
+            $table->integer('Year');
+            $table->date('ClosingDate');
             $table->enum('status', ['Pending', 'In Progress', 'Completed'])->default('Pending');
-            $table->boolean('LastBiAnnual')->default(false);
+            $table->enum('LastBiAnnual', ['Yes', 'No']);
+
             $table->index(['ReportName', 'ReportingID'], 'idx_report_name');
             $table->unique(['ReportName', 'ReportingID'], 'idx_report_name_id');
             $table->timestamps();
