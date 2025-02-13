@@ -183,7 +183,7 @@ Route::middleware(['auth'])->group(function () {
     //
     //
 
-    Route::get('/', [EcsaReportingController::class, 'SelectUser']);
+    Route::get('/', [EcsaReportingController::class, 'SelectUser'])->route('dashboard');
 
 // Grouping under an 'ecsa' URI prefix for clarity.
     Route::prefix('ecsa')->group(function () {
