@@ -167,23 +167,9 @@ Route::middleware(['auth'])->group(function () {
     //
     //
     //
-    //
-    //
-    //
-    //
-    //
-    //
-    //
-    //
-    //
-    //
-    //
-    //
-    //
-    //
-    //
 
-    Route::get('/', [EcsaReportingController::class, 'SelectUser'])->route('dashboard');
+    Route::get('/dashboard', [EcsaReportingController::class, 'SelectUser'])->name('dashboard');
+    Route::get('/', [EcsaReportingController::class, 'SelectUser']);
 
 // Grouping under an 'ecsa' URI prefix for clarity.
     Route::prefix('ecsa')->group(function () {
@@ -192,7 +178,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('select-user', [EcsaReportingController::class, 'SelectUser'])
             ->name('Ecsa_SelectUser');
 
-        Route::get('/', [EcsaReportingController::class, 'SelectUser']);
+        // Route::get('/', [EcsaReportingController::class, 'SelectUser']);
 
         // POST route for selecting a cluster.
         Route::any('select-cluster', [EcsaReportingController::class, 'SelectCluster'])
