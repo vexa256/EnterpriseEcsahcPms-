@@ -65,7 +65,15 @@ class EcsaIndicatorPerformanceController extends Controller
         $performanceData = $this->getPerformanceData($selectedCluster, $selectedYear, $selectedReport);
 
         $Page = 'EcsaAnalytics.IndicatorPerformance';
-        return view('scrn', compact('Page', 'performanceData', 'clusters', 'selectedCluster', 'selectedYear', 'selectedReport', 'report'));
+        return view('scrn', compact(
+            'Page',
+            'performanceData',
+            'clusters',
+            'selectedCluster',
+            'selectedYear',
+            'selectedReport',
+            'report'
+        ));
     }
 
     private function getPerformanceData($selectedCluster, $selectedYear, $selectedReport)
@@ -167,6 +175,11 @@ class EcsaIndicatorPerformanceController extends Controller
         return null;
     }
 
+    /**
+     * Calculate the raw score based on responses.
+     * For "Number" indicators, we sum the responses.
+     * For "Yes/No" or "Boolean", we compute a percentage of affirmative responses.
+     */
     private function calculateScore($indicator, $clusterId, $reportId)
     {
         // Build the query for responses.
@@ -202,34 +215,46 @@ class EcsaIndicatorPerformanceController extends Controller
         }
     }
 
+    /**
+     * Calculate the performance status based on the computed score.
+     * For numeric indicators, we compute the percentage progress based on the baseline and target.
+     * For Boolean/Yes-No indicators, the score is already a percentage.
+     * Then we apply the following thresholds:
+     * - Not Performing: < 10%
+     * - In Progress: 10% to < 50%
+     * - On Track: 50% to < 90%
+     * - Met: ≥ 90%
+     */
     private function calculateStatus($score, $baseline, $target, $indicator)
     {
+        // If any key value is missing, return "not performing".
         if ($score === null || $baseline === null || $target === null) {
             return 'not performing';
         }
 
-        switch ($indicator->ResponseType) {
-            case 'Number':
-                $range    = $target - $baseline;
-                $progress = $score - $baseline;
-                if ($progress >= $range) {
-                    return 'met';
-                } elseif ($progress > 0) {
-                    return 'progressing';
-                } else {
-                    return 'not performing';
-                }
-            case 'Yes/No':
-            case 'Boolean':
-                if ($score >= 100) {
-                    return 'met';
-                } elseif ($score > $baseline) {
-                    return 'progressing';
-                } else {
-                    return 'not performing';
-                }
-            default:
-                return 'N/A';
+        // For numeric indicators, compute the percentage progress.
+        if ($indicator->ResponseType === 'Number') {
+            $range = $target - $baseline;
+            if ($range == 0) {
+                return ($score >= $target) ? 'met' : 'not performing';
+            }
+            $percentage = (($score - $baseline) / $range) * 100;
+        }
+        // For Boolean/Yes-No indicators, the score is already a percentage.
+        elseif (in_array($indicator->ResponseType, ['Yes/No', 'Boolean'])) {
+            $percentage = $score;
+        } else {
+            return 'N/A';
+        }
+
+        if ($percentage < 10) {
+            return 'not performing';
+        } elseif ($percentage < 50) {
+            return 'in progress';
+        } elseif ($percentage < 90) {
+            return 'on track';
+        } else {
+            return 'met';
         }
     }
 
@@ -247,16 +272,26 @@ class EcsaIndicatorPerformanceController extends Controller
             ->toArray();
     }
 
+    /**
+     * Calculate overall objective status based on the percentage of indicators that are "met"
+     * using the same thresholds:
+     * - Not Performing: < 10%
+     * - In Progress: 10% to < 50%
+     * - On Track: 50% to < 90%
+     * - Met: ≥ 90%
+     */
     private function calculateObjectiveStatus($metCount, $totalIndicators)
     {
-        $percentage = ($totalIndicators > 0) ? ($metCount / $totalIndicators) * 100 : 0;
+        $percentage = ($totalIndicators > 0) ? ($metCount / $totalIndicators * 100) : 0;
 
-        if ($percentage >= 75) {
-            return 'met';
-        } elseif ($percentage >= 50) {
-            return 'progressing';
-        } else {
+        if ($percentage < 10) {
             return 'not performing';
+        } elseif ($percentage < 50) {
+            return 'in progress';
+        } elseif ($percentage < 90) {
+            return 'on track';
+        } else {
+            return 'met';
         }
     }
 

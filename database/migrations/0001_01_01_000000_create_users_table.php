@@ -18,7 +18,7 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password')->nullable();
             $table->string('EntityID', 255)->nullable();
-            $table->string('ClusterID', 255)->nullable();
+            $table->string('ClusterID')->nullable();
             $table->enum('UserType', ['MPA', 'ECSA-HC'])->default('ECSA-HC');
             $table->string('UserCode', 255)->unique()->nullable();
             $table->string('Phone', 20)->nullable();
@@ -28,7 +28,7 @@ return new class extends Migration
             $table->string('ParentOrganization', 255)->nullable();
             $table->enum('Sex', ['Male', 'Female'])->nullable();
             $table->string('JobTitle', 255)->nullable();
-            $table->enum('AccountRole', ['Admin', 'User', 'Viewer'])->default('User');
+            $table->enum('AccountRole', ['Admin', 'User', 'Cluster Head'])->default('User');
             $table->string('UserID', 255)->unique()->nullable();
             $table->rememberToken();
             $table->timestamps();

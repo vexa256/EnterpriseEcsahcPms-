@@ -7,29 +7,27 @@ use Illuminate\Support\Facades\DB;
 class MpaRRFController extends Controller
 {
     /**
-     * Display all Regional Results Framework (RRF) indicators (EntityID = 'RRF').
+     * Display all Regional Results Framework (RRF) indicators.
      */
-    public function ShowRRFIndicators()
+    public function ShowRRFIndicators(Request $request)
     {
-        // Fetch all indicators where EntityID = 'RRF'
+        // Fetch all indicators with EntityID = 'RRF'
         $indicators = DB::table('mpa_indicators')
             ->where('EntityID', 'RRF')
             ->orderBy('id', 'asc')
             ->get();
 
-        // Provide a placeholder "entity" object to keep consistent with your layout logic
-        // This might not be strictly necessary, but can be useful if your Blade references `$SelectedEntity`.
+        // Create a fake entity object so that the Blade view can display details.
         $fakeEntity = (object) [
             'EntityID' => 'RRF',
             'Entity'   => 'Regional Results Framework',
         ];
 
-        // Return data in the same "scrn" format you use
         $data = [
-            "Desc"           => "Manage Regional Results Framework Indicators",
-            "Page"           => "indicators.MgtRffIndicators",    // The partial your scrn view includes
-            "entities"       => DB::table('mpa_entities')->get(), // If your layout needs them
-            "SelectedEntity" => $fakeEntity,                      // So Blade can display "RRF" if needed
+                                                                  // "Desc"           => "Manage Regional Results Framework Indicators",
+            "Page"           => "indicators.MgtRffIndicators",    // This is the Blade partial that displays the list.
+            "entities"       => DB::table('mpa_entities')->get(), // All entities, if needed by layout.
+            "SelectedEntity" => $fakeEntity,
             "indicators"     => $indicators,
         ];
 
@@ -37,13 +35,15 @@ class MpaRRFController extends Controller
     }
 
     /**
-     * Store a new RRF Indicator (EntityID = 'RRF').
+     * Store a new RRF Indicator.
      */
     public function StoreRRFIndicator(Request $request)
     {
-        // Validate
+        // Validate the incoming form data.
+        // Note: The form fields are named "IndicatorPrimaryCategory" and "IndicatorSecondaryCategory"
+        // but we map these to our database columns "PrimaryCategory" and "SecondaryCategory".
         $validated = $request->validate([
-            // We do NOT require 'EntityID' from the form because we forcibly set it to 'RRF'
+            'EntityID'                   => 'required|exists:mpa_entities,EntityID', // This field may not be sent; we force it below.
             'IndicatorPrimaryCategory'   => 'required|string|max:255',
             'IndicatorSecondaryCategory' => 'required|string|max:255',
             'IID'                        => 'required|string|max:255|unique:mpa_indicators,IID',
@@ -52,7 +52,7 @@ class MpaRRFController extends Controller
             'IndicatorQuestion'          => 'nullable|string',
             'RemarksComments'            => 'nullable|string',
             'SourceOfData'               => 'nullable|string|max:255',
-            'ResponseType'               => 'required|in:Text,Number,Boolean,Yes/No',
+            'ResponseType'               => 'required|in:Text,Number,Boolean,Yes/No,Percentage',
             'ReportingPeriod'            => 'nullable|string|max:50',
             'ExpectedTarget'             => 'nullable|string|max:255',
             'BaselinePAD2023'            => 'nullable|string|max:255',
@@ -66,31 +66,31 @@ class MpaRRFController extends Controller
             'TargetYearSeven2030'        => 'nullable|string|max:255',
         ]);
 
-        // Insert the record with EntityID = 'RRF'
+        // Insert the new indicator record; we force EntityID to 'RRF'
         $insertedId = DB::table('mpa_indicators')->insertGetId([
-            'EntityID'                   => 'RRF',
-            'IndicatorPrimaryCategory'   => $validated['IndicatorPrimaryCategory'],
-            'IndicatorSecondaryCategory' => $validated['IndicatorSecondaryCategory'],
-            'IID'                        => $validated['IID'],
-            'Indicator'                  => $validated['Indicator'],
-            'IndicatorDefinition'        => $validated['IndicatorDefinition'] ?? null,
-            'IndicatorQuestion'          => $validated['IndicatorQuestion'] ?? null,
-            'RemarksComments'            => $validated['RemarksComments'] ?? null,
-            'SourceOfData'               => $validated['SourceOfData'] ?? null,
-            'ResponseType'               => $validated['ResponseType'],
-            'ReportingPeriod'            => $validated['ReportingPeriod'] ?? null,
-            'ExpectedTarget'             => $validated['ExpectedTarget'] ?? null,
-            'BaselinePAD2023'            => $validated['BaselinePAD2023'] ?? null,
-            'Baseline2024'               => $validated['Baseline2024'] ?? null,
-            'TargetYearOne2024'          => $validated['TargetYearOne2024'] ?? null,
-            'TargetYearTwo2025'          => $validated['TargetYearTwo2025'] ?? null,
-            'TargetYearThree2026'        => $validated['TargetYearThree2026'] ?? null,
-            'TargetYearFour2027'         => $validated['TargetYearFour2027'] ?? null,
-            'TargetYearFive2028'         => $validated['TargetYearFive2028'] ?? null,
-            'TargetYearSix2029'          => $validated['TargetYearSix2029'] ?? null,
-            'TargetYearSeven2030'        => $validated['TargetYearSeven2030'] ?? null,
-            'created_at'                 => now(),
-            'updated_at'                 => now(),
+            'EntityID'            => 'RRF',
+            'PrimaryCategory'     => $validated['IndicatorPrimaryCategory'],   // Mapped to db column
+            'SecondaryCategory'   => $validated['IndicatorSecondaryCategory'], // Mapped to db column
+            'IID'                 => $validated['IID'],
+            'Indicator'           => $validated['Indicator'],
+            'IndicatorDefinition' => $validated['IndicatorDefinition'] ?? null,
+            'IndicatorQuestion'   => $validated['IndicatorQuestion'] ?? null,
+            'RemarksComments'     => $validated['RemarksComments'] ?? null,
+            'SourceOfData'        => $validated['SourceOfData'] ?? null,
+            'ResponseType'        => $validated['ResponseType'],
+            'ReportingPeriod'     => $validated['ReportingPeriod'] ?? null,
+            'ExpectedTarget'      => $validated['ExpectedTarget'] ?? null,
+            'BaselinePAD2023'     => $validated['BaselinePAD2023'] ?? null,
+            'Baseline2024'        => $validated['Baseline2024'] ?? null,
+            'TargetYearOne2024'   => $validated['TargetYearOne2024'] ?? null,
+            'TargetYearTwo2025'   => $validated['TargetYearTwo2025'] ?? null,
+            'TargetYearThree2026' => $validated['TargetYearThree2026'] ?? null,
+            'TargetYearFour2027'  => $validated['TargetYearFour2027'] ?? null,
+            'TargetYearFive2028'  => $validated['TargetYearFive2028'] ?? null,
+            'TargetYearSix2029'   => $validated['TargetYearSix2029'] ?? null,
+            'TargetYearSeven2030' => $validated['TargetYearSeven2030'] ?? null,
+            'created_at'          => now(),
+            'updated_at'          => now(),
         ]);
 
         if ($insertedId) {
@@ -99,17 +99,18 @@ class MpaRRFController extends Controller
             session()->flash('error', 'Failed to add RRF indicator. Please try again.');
         }
 
-        // Now re-fetch the same data (all RRF indicators)
+        // Refresh and return the updated view.
         return $this->refreshRRFIndicatorsView();
     }
 
     /**
-     * Update an existing RRF Indicator (EntityID = 'RRF').
+     * Update an existing RRF Indicator.
      */
     public function UpdateRRFIndicator(Request $request)
     {
         $validated = $request->validate([
             'id'                         => 'required|exists:mpa_indicators,id',
+            // 'EntityID'                   => 'required|exists:mpa_entities,EntityID',
             'IndicatorPrimaryCategory'   => 'required|string|max:255',
             'IndicatorSecondaryCategory' => 'required|string|max:255',
             'IID'                        => 'required|string|max:255|unique:mpa_indicators,IID,' . $request->id,
@@ -118,7 +119,7 @@ class MpaRRFController extends Controller
             'IndicatorQuestion'          => 'nullable|string',
             'RemarksComments'            => 'nullable|string',
             'SourceOfData'               => 'nullable|string|max:255',
-            'ResponseType'               => 'required|in:Text,Number,Boolean,Yes/No',
+            'ResponseType'               => 'required|in:Text,Number,Boolean,Yes/No,Percentage',
             'ReportingPeriod'            => 'nullable|string|max:50',
             'ExpectedTarget'             => 'nullable|string|max:255',
             'BaselinePAD2023'            => 'nullable|string|max:255',
@@ -133,30 +134,30 @@ class MpaRRFController extends Controller
         ]);
 
         $affected = DB::table('mpa_indicators')
-            ->where('id', $validated['id'])
-            ->where('EntityID', 'RRF') // Ensure we only update RRF indicators
+            ->where('id', $request->id)
+            ->where('EntityID', 'RRF') // Ensure we update only RRF indicators
             ->update([
-                'IndicatorPrimaryCategory'   => $validated['IndicatorPrimaryCategory'],
-                'IndicatorSecondaryCategory' => $validated['IndicatorSecondaryCategory'],
-                'IID'                        => $validated['IID'],
-                'Indicator'                  => $validated['Indicator'],
-                'IndicatorDefinition'        => $validated['IndicatorDefinition'] ?? null,
-                'IndicatorQuestion'          => $validated['IndicatorQuestion'] ?? null,
-                'RemarksComments'            => $validated['RemarksComments'] ?? null,
-                'SourceOfData'               => $validated['SourceOfData'] ?? null,
-                'ResponseType'               => $validated['ResponseType'],
-                'ReportingPeriod'            => $validated['ReportingPeriod'] ?? null,
-                'ExpectedTarget'             => $validated['ExpectedTarget'] ?? null,
-                'BaselinePAD2023'            => $validated['BaselinePAD2023'] ?? null,
-                'Baseline2024'               => $validated['Baseline2024'] ?? null,
-                'TargetYearOne2024'          => $validated['TargetYearOne2024'] ?? null,
-                'TargetYearTwo2025'          => $validated['TargetYearTwo2025'] ?? null,
-                'TargetYearThree2026'        => $validated['TargetYearThree2026'] ?? null,
-                'TargetYearFour2027'         => $validated['TargetYearFour2027'] ?? null,
-                'TargetYearFive2028'         => $validated['TargetYearFive2028'] ?? null,
-                'TargetYearSix2029'          => $validated['TargetYearSix2029'] ?? null,
-                'TargetYearSeven2030'        => $validated['TargetYearSeven2030'] ?? null,
-                'updated_at'                 => now(),
+                'PrimaryCategory'     => $validated['IndicatorPrimaryCategory'],
+                'SecondaryCategory'   => $validated['IndicatorSecondaryCategory'],
+                'IID'                 => $validated['IID'],
+                'Indicator'           => $validated['Indicator'],
+                'IndicatorDefinition' => $validated['IndicatorDefinition'] ?? null,
+                'IndicatorQuestion'   => $validated['IndicatorQuestion'] ?? null,
+                'RemarksComments'     => $validated['RemarksComments'] ?? null,
+                'SourceOfData'        => $validated['SourceOfData'] ?? null,
+                'ResponseType'        => $validated['ResponseType'],
+                'ReportingPeriod'     => $validated['ReportingPeriod'] ?? null,
+                'ExpectedTarget'      => $validated['ExpectedTarget'] ?? null,
+                'BaselinePAD2023'     => $validated['BaselinePAD2023'] ?? null,
+                'Baseline2024'        => $validated['Baseline2024'] ?? null,
+                'TargetYearOne2024'   => $validated['TargetYearOne2024'] ?? null,
+                'TargetYearTwo2025'   => $validated['TargetYearTwo2025'] ?? null,
+                'TargetYearThree2026' => $validated['TargetYearThree2026'] ?? null,
+                'TargetYearFour2027'  => $validated['TargetYearFour2027'] ?? null,
+                'TargetYearFive2028'  => $validated['TargetYearFive2028'] ?? null,
+                'TargetYearSix2029'   => $validated['TargetYearSix2029'] ?? null,
+                'TargetYearSeven2030' => $validated['TargetYearSeven2030'] ?? null,
+                'updated_at'          => now(),
             ]);
 
         if ($affected) {
@@ -165,8 +166,33 @@ class MpaRRFController extends Controller
             session()->flash('error', 'Failed to update RRF indicator or no changes made.');
         }
 
-        // Re-fetch data
         return $this->refreshRRFIndicatorsView();
+    }
+
+    /**
+     * Helper function to refresh the RRF indicators view.
+     */
+    protected function refreshRRFIndicatorsView()
+    {
+        $indicators = DB::table('mpa_indicators')
+            ->where('EntityID', 'RRF')
+            ->orderBy('id', 'asc')
+            ->get();
+
+        $fakeEntity = (object) [
+            'EntityID' => 'RRF',
+            'Entity'   => 'Regional Results Framework',
+        ];
+
+        $data = [
+            // "Desc"           => "Manage Regional Results Framework Indicators",
+            "Page"           => "indicators.MgtRffIndicators",
+            "entities"       => DB::table('mpa_entities')->get(),
+            "SelectedEntity" => $fakeEntity,
+            "indicators"     => $indicators,
+        ];
+
+        return view('scrn', $data);
     }
 
     /**
@@ -193,31 +219,4 @@ class MpaRRFController extends Controller
         return $this->refreshRRFIndicatorsView();
     }
 
-    /**
-     * Helper: Re-fetch all RRF indicators and return the "scrn" view with the same structure.
-     */
-    private function refreshRRFIndicatorsView()
-    {
-        // We'll create a faux "entity" object to remain consistent with your layout
-        $fakeEntity = (object) [
-            'EntityID' => 'RRF',
-            'Entity'   => 'Regional Results Framework',
-        ];
-
-        // Grab all RRF indicators
-        $indicators = DB::table('mpa_indicators')
-            ->where('EntityID', 'RRF')
-            ->orderBy('id', 'asc')
-            ->get();
-
-        $data = [
-            "Desc"           => "Manage Regional Results Framework Indicators",
-            "Page"           => "indicators.MgtRffIndicators",    // Or any partial you want
-            "entities"       => DB::table('mpa_entities')->get(), // If your layout needs them
-            "SelectedEntity" => $fakeEntity,                      // So Blade can display "RRF" if needed
-            "indicators"     => $indicators,
-        ];
-
-        return view('scrn', $data);
-    }
 }

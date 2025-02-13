@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -43,7 +44,24 @@ class EcsaReportingController extends Controller
 
     public function SelectUser()
     {
-        $users = DB::table('users')->where('UserType', 'ECSA-HC')->get();
+        // Ensure the user is logged in.
+        if (! Auth::check()) {
+            return redirect()->route('login');
+        }
+
+        // Retrieve the currently authenticated user.
+        $currentUser = Auth::user();
+
+        // If the current user is not of type ECSA-HC, redirect them to the entity selection route.
+        if ($currentUser->UserType !== 'ECSA-HC') {
+            return redirect()->route('entity.select');
+        }
+
+        // Otherwise, proceed to retrieve all ECSA-HC users.
+        $users = DB::table('users')
+            ->where('UserType', 'ECSA-HC')
+            ->orderBy('name', 'asc') // Optional: order by name for consistency.
+            ->get();
 
         return view('scrn', [
             "Desc"  => "Select an ECSA-HC user to begin reporting",

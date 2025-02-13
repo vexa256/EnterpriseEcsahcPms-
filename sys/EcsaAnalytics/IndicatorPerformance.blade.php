@@ -40,25 +40,25 @@
             <div class="card mb-4">
                 <div class="card-body">
                     <h3 class="card-title mb-4">Overall Performance Summary</h3>
-                    <div class="row g-3">
-                        @php
-                            $totalIndicators = 0;
-                            $metCount = 0;
-                            $progressingCount = 0;
-                            $notPerformingCount = 0;
-                            foreach ($performanceData as $objective) {
-                                foreach ($objective['indicators'] as $indicator) {
-                                    $totalIndicators++;
-                                    if ($indicator['status'] === 'met') {
-                                        $metCount++;
-                                    } elseif ($indicator['status'] === 'progressing') {
-                                        $progressingCount++;
-                                    } elseif ($indicator['status'] === 'not performing') {
-                                        $notPerformingCount++;
-                                    }
+                    @php
+                        $totalIndicators = 0;
+                        $metCount = 0;
+                        $progressingCount = 0;
+                        $notPerformingCount = 0;
+                        foreach ($performanceData as $objective) {
+                            foreach ($objective['indicators'] as $indicator) {
+                                $totalIndicators++;
+                                if ($indicator['status'] === 'met') {
+                                    $metCount++;
+                                } elseif ($indicator['status'] === 'progressing') {
+                                    $progressingCount++;
+                                } elseif ($indicator['status'] === 'not performing') {
+                                    $notPerformingCount++;
                                 }
                             }
-                        @endphp
+                        }
+                    @endphp
+                    <div class="row g-3">
                         <div class="col-sm-6 col-lg-3">
                             <div class="card card-sm">
                                 <div class="card-body">
@@ -149,141 +149,145 @@
                 </div>
             </div>
 
+            {{-- Only display Strategic Objectives that have matching indicators --}}
             @foreach ($performanceData as $objectiveId => $objective)
-                <div class="card mb-4">
-                    <div
-                        class="card-status-start bg-{{ $objective['status'] === 'met' ? 'green' : ($objective['status'] === 'progressing' ? 'yellow' : 'red') }}">
-                    </div>
-                    <div class="card-header">
-                        <h3 class="card-title">
-                            {{ $objective['name'] }}
-                            <span
-                                class="badge bg-{{ $objective['status'] === 'met' ? 'green' : ($objective['status'] === 'progressing' ? 'yellow' : 'red') }}-lt ms-2">
-                                {{ ucfirst($objective['status']) }}
-                            </span>
-                        </h3>
-                        <div class="card-actions">
-                            <a href="#" class="btn btn-icon" data-bs-toggle="collapse"
-                                data-bs-target="#collapse-{{ $objectiveId }}">
-                                <i class="fas fa-chevron-down"></i>
-                            </a>
+                @if (!empty($objective['indicators']) && count($objective['indicators']) > 0)
+                    <div class="card mb-4">
+                        <div
+                            class="card-status-start bg-{{ $objective['status'] === 'met' ? 'green' : ($objective['status'] === 'progressing' ? 'yellow' : 'red') }}">
+                        </div>
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                {{ $objective['name'] }}
+                                <span
+                                    class="badge bg-{{ $objective['status'] === 'met' ? 'green' : ($objective['status'] === 'progressing' ? 'yellow' : 'red') }}-lt ms-2">
+                                    {{ ucfirst($objective['status']) }}
+                                </span>
+                            </h3>
+                            <div class="card-actions">
+                                <a href="#" class="btn btn-icon" data-bs-toggle="collapse"
+                                    data-bs-target="#collapse-{{ $objectiveId }}">
+                                    <i class="fas fa-chevron-down"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="card-body collapse show" id="collapse-{{ $objectiveId }}">
+                            <p class="text-muted mb-4">{{ $objective['description'] }}</p>
+                            <div class="table-responsive">
+                                <table class="table table-vcenter card-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Indicator</th>
+                                            <th>Baseline</th>
+                                            <th>Target</th>
+                                            <th>Score</th>
+                                            <th>Status</th>
+                                            <th>Details</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($objective['indicators'] as $index => $indicator)
+                                            <tr>
+                                                <td>{{ $indicator['name'] }}</td>
+                                                <td>{{ $indicator['baseline'] ?? 'N/A' }}</td>
+                                                <td>{{ $indicator['target'] ?? 'N/A' }}</td>
+                                                <td>{{ $indicator['score'] }}</td>
+                                                <td>
+                                                    <span
+                                                        class="badge bg-{{ $indicator['status'] === 'met' ? 'green' : ($indicator['status'] === 'progressing' ? 'yellow' : 'red') }}-lt">
+                                                        {{ ucfirst($indicator['status']) }}
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-outline-primary"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#modal-{{ $objectiveId }}-{{ $index }}">
+                                                        <i class="fas fa-info-circle me-1"></i>View
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
-                    <div class="card-body collapse show" id="collapse-{{ $objectiveId }}">
-                        <p class="text-muted mb-4">{{ $objective['description'] }}</p>
-                        <div class="table-responsive">
-                            <table class="table table-vcenter card-table">
-                                <thead>
-                                    <tr>
-                                        <th>Indicator</th>
-                                        <th>Baseline</th>
-                                        <th>Target</th>
-                                        <th>Score</th>
-                                        <th>Status</th>
-                                        <th>Details</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($objective['indicators'] as $index => $indicator)
-                                        <tr>
-                                            <td>{{ $indicator['name'] }}</td>
-                                            <td>{{ $indicator['baseline'] ?? 'N/A' }}</td>
-                                            <td>{{ $indicator['target'] ?? 'N/A' }}</td>
-                                            <td>{{ $indicator['score'] }}</td>
-                                            <td>
+
+                    @foreach ($objective['indicators'] as $index => $indicator)
+                        <div class="modal modal-blur fade" id="modal-{{ $objectiveId }}-{{ $index }}"
+                            tabindex="-1" role="dialog" aria-hidden="true">
+                            <div class="modal-dialog modal-lg" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">{{ $indicator['name'] }}</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row mb-3">
+                                            <div class="col-4">
+                                                <div class="text-muted">Baseline</div>
+                                                <div class="h3">{{ $indicator['baseline'] ?? 'N/A' }}</div>
+                                            </div>
+                                            <div class="col-4">
+                                                <div class="text-muted">Target</div>
+                                                <div class="h3">{{ $indicator['target'] ?? 'N/A' }}</div>
+                                            </div>
+                                            <div class="col-4">
+                                                <div class="text-muted">Score</div>
+                                                <div class="h3">{{ $indicator['score'] }}</div>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <div class="text-muted mb-1">Status</div>
+                                            <div class="h3">
                                                 <span
                                                     class="badge bg-{{ $indicator['status'] === 'met' ? 'green' : ($indicator['status'] === 'progressing' ? 'yellow' : 'red') }}-lt">
                                                     {{ ucfirst($indicator['status']) }}
                                                 </span>
-                                            </td>
-                                            <td>
-                                                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
-                                                    data-bs-target="#modal-{{ $objectiveId }}-{{ $index }}">
-                                                    <i class="fas fa-info-circle me-1"></i>View
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                @foreach ($objective['indicators'] as $index => $indicator)
-                    <div class="modal modal-blur fade" id="modal-{{ $objectiveId }}-{{ $index }}"
-                        tabindex="-1" role="dialog" aria-hidden="true">
-                        <div class="modal-dialog modal-lg" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title">{{ $indicator['name'] }}</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <div class="row mb-3">
-                                        <div class="col-4">
-                                            <div class="text-muted">Baseline</div>
-                                            <div class="h3">{{ $indicator['baseline'] ?? 'N/A' }}</div>
+                                            </div>
                                         </div>
-                                        <div class="col-4">
-                                            <div class="text-muted">Target</div>
-                                            <div class="h3">{{ $indicator['target'] ?? 'N/A' }}</div>
+                                        <div class="mb-3">
+                                            <div class="text-muted mb-1">Responsible Clusters</div>
+                                            <div>
+                                                @foreach ($indicator['responsibleClusters'] as $cluster)
+                                                    <span class="badge bg-blue-lt me-1">{{ $cluster }}</span>
+                                                @endforeach
+                                            </div>
                                         </div>
-                                        <div class="col-4">
-                                            <div class="text-muted">Score</div>
-                                            <div class="h3">{{ $indicator['score'] }}</div>
-                                        </div>
-                                    </div>
-                                    <div class="mb-3">
-                                        <div class="text-muted mb-1">Status</div>
-                                        <div class="h3">
-                                            <span
-                                                class="badge bg-{{ $indicator['status'] === 'met' ? 'green' : ($indicator['status'] === 'progressing' ? 'yellow' : 'red') }}-lt">
-                                                {{ ucfirst($indicator['status']) }}
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div class="mb-3">
-                                        <div class="text-muted mb-1">Responsible Clusters</div>
                                         <div>
-                                            @foreach ($indicator['responsibleClusters'] as $cluster)
-                                                <span class="badge bg-blue-lt me-1">{{ $cluster }}</span>
-                                            @endforeach
+                                            <div class="text-muted mb-1">Cluster Responses</div>
+                                            <ul class="list-group">
+                                                @foreach ($indicator['clusterResponses'] as $clusterId => $response)
+                                                    <li
+                                                        class="list-group-item d-flex justify-content-between align-items-center">
+                                                        <div>
+                                                            <strong>{{ $clusters->firstWhere('ClusterID', $clusterId)->Cluster_Name }}</strong>
+                                                            <br>
+                                                            <small
+                                                                class="text-muted">{{ $response['ReportingComment'] }}</small>
+                                                        </div>
+                                                        <span class="badge bg-primary rounded-pill">
+                                                            {{ $indicator['responseType'] === 'Boolean' || $indicator['responseType'] === 'Yes/No'
+                                                                ? ($response['Response']
+                                                                    ? 'Yes'
+                                                                    : 'No')
+                                                                : $response['Response'] }}
+                                                        </span>
+                                                    </li>
+                                                @endforeach
+                                            </ul>
                                         </div>
                                     </div>
-                                    <div>
-                                        <div class="text-muted mb-1">Cluster Responses</div>
-                                        <ul class="list-group">
-                                            @foreach ($indicator['clusterResponses'] as $clusterId => $response)
-                                                <li
-                                                    class="list-group-item d-flex justify-content-between align-items-center">
-                                                    <div>
-                                                        <strong>{{ $clusters->firstWhere('ClusterID', $clusterId)->Cluster_Name }}</strong>
-                                                        <br>
-                                                        <small
-                                                            class="text-muted">{{ $response['ReportingComment'] }}</small>
-                                                    </div>
-                                                    <span class="badge bg-primary rounded-pill">
-                                                        {{ $indicator['responseType'] === 'Boolean' || $indicator['responseType'] === 'Yes/No'
-                                                            ? ($response['Response']
-                                                                ? 'Yes'
-                                                                : 'No')
-                                                            : $response['Response'] }}
-                                                    </span>
-                                                </li>
-                                            @endforeach
-                                        </ul>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-primary"
+                                            data-bs-dismiss="modal">Close</button>
                                     </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-primary"
-                                        data-bs-dismiss="modal">Close</button>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                @endforeach
+                    @endforeach
+                @endif
             @endforeach
         </div>
     </div>

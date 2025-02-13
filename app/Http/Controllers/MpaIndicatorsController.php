@@ -27,42 +27,41 @@ class MpaIndicatorsController extends Controller
      */
     public function ShowEntityIndicators(Request $request)
     {
+        // Retrieve the EntityID from the request
         $entityID = $request->input('EntityID');
 
-        // Verify the entity exists
+        // Verify that the specified entity exists in the mpa_entities table.
         $entity = DB::table('mpa_entities')
             ->where('EntityID', $entityID)
             ->first();
 
         if (! $entity) {
-            // If no entity found, just return to the same "SelectEntity" but with an error
+            // If no matching entity is found, flash an error and return to the entity selection view.
+            session()->flash('error', 'The selected entity does not exist.');
             $data = [
                 "Desc"     => "Select an Entity to Manage MPA Indicators",
-                "Page"     => "indicators.SelectEntity", // The Blade partial to include in scrn
+                "Page"     => "indicators.SelectEntity", // Blade partial for entity selection
                 "entities" => DB::table("mpa_entities")->get(),
             ];
-
-            // You can store an error message in session, or embed in $data as well
-            session()->flash('error', 'The selected entity does not exist.');
             return view('scrn', $data);
         }
 
-        // Fetch all indicators for this entity
+        // Fetch all indicators for the selected entity from the mpa_indicators table.
         $indicators = DB::table('mpa_indicators')
             ->where('EntityID', $entityID)
             ->orderBy('id', 'asc')
             ->get();
 
-        // Return data in the required format
+        // Prepare the data array to be passed to the view.
         $data = [
-            "Desc"           => "Manage  CRF Indicators for " . $entity->Entity,
+            "Desc"           => "Manage CRF Indicators for " . $entity->Entity,
             "Page"           => "indicators.MgtMpaIndicators",
-            "entities"       => DB::table("mpa_entities")->get(), // If your layout needs all entities
-                                                                  // Additional data needed by the partial
+            "entities"       => DB::table("mpa_entities")->get(), // All entities (if needed for layout)
             "SelectedEntity" => $entity,
             "indicators"     => $indicators,
         ];
 
+        // Return the view with the data.
         return view('scrn', $data);
     }
 
@@ -73,18 +72,20 @@ class MpaIndicatorsController extends Controller
      */
     public function StoreIndicator(Request $request)
     {
-        // Validate the incoming form data
+        // Validate the incoming form data.
+        // Note: Although the form fields are named IndicatorPrimaryCategory and IndicatorSecondaryCategory,
+        // we will map these values to the DB columns PrimaryCategory and SecondaryCategory.
         $validated = $request->validate([
             'EntityID'                   => 'required|exists:mpa_entities,EntityID',
-            'IndicatorPrimaryCategory'   => 'required|string|max:255',
-            'IndicatorSecondaryCategory' => 'required|string|max:255',
+            'IndicatorPrimaryCategory'   => 'required|string|in:CRF,RRF',
+            'IndicatorSecondaryCategory' => 'required|string|in:"CRF PDO","CRF Intermediate","RRF PDO","RRF Intermediate"',
             'IID'                        => 'required|string|max:255|unique:mpa_indicators,IID',
             'Indicator'                  => 'required|string|max:255',
             'IndicatorDefinition'        => 'nullable|string',
             'IndicatorQuestion'          => 'nullable|string',
             'RemarksComments'            => 'nullable|string',
             'SourceOfData'               => 'nullable|string|max:255',
-            'ResponseType'               => 'required|in:Text,Number,Boolean,Yes/No',
+            'ResponseType'               => 'required|in:Text,Number,Boolean,Percentage,Yes/No',
             'ReportingPeriod'            => 'nullable|string|max:50',
             'ExpectedTarget'             => 'nullable|string|max:255',
             'BaselinePAD2023'            => 'nullable|string|max:255',
@@ -98,31 +99,32 @@ class MpaIndicatorsController extends Controller
             'TargetYearSeven2030'        => 'nullable|string|max:255',
         ]);
 
-        // Insert the record
+        // Insert the record into the database.
+        // Map the form field names to the corresponding DB columns.
         $insertedId = DB::table('mpa_indicators')->insertGetId([
-            'EntityID'                   => $validated['EntityID'],
-            'IndicatorPrimaryCategory'   => $validated['IndicatorPrimaryCategory'],
-            'IndicatorSecondaryCategory' => $validated['IndicatorSecondaryCategory'],
-            'IID'                        => $validated['IID'],
-            'Indicator'                  => $validated['Indicator'],
-            'IndicatorDefinition'        => $validated['IndicatorDefinition'] ?? null,
-            'IndicatorQuestion'          => $validated['IndicatorQuestion'] ?? null,
-            'RemarksComments'            => $validated['RemarksComments'] ?? null,
-            'SourceOfData'               => $validated['SourceOfData'] ?? null,
-            'ResponseType'               => $validated['ResponseType'],
-            'ReportingPeriod'            => $validated['ReportingPeriod'] ?? null,
-            'ExpectedTarget'             => $validated['ExpectedTarget'] ?? null,
-            'BaselinePAD2023'            => $validated['BaselinePAD2023'] ?? null,
-            'Baseline2024'               => $validated['Baseline2024'] ?? null,
-            'TargetYearOne2024'          => $validated['TargetYearOne2024'] ?? null,
-            'TargetYearTwo2025'          => $validated['TargetYearTwo2025'] ?? null,
-            'TargetYearThree2026'        => $validated['TargetYearThree2026'] ?? null,
-            'TargetYearFour2027'         => $validated['TargetYearFour2027'] ?? null,
-            'TargetYearFive2028'         => $validated['TargetYearFive2028'] ?? null,
-            'TargetYearSix2029'          => $validated['TargetYearSix2029'] ?? null,
-            'TargetYearSeven2030'        => $validated['TargetYearSeven2030'] ?? null,
-            'created_at'                 => now(),
-            'updated_at'                 => now(),
+            'EntityID'            => $validated['EntityID'],
+            'PrimaryCategory'     => $validated['IndicatorPrimaryCategory'],
+            'SecondaryCategory'   => $validated['IndicatorSecondaryCategory'],
+            'IID'                 => $validated['IID'],
+            'Indicator'           => $validated['Indicator'],
+            'IndicatorDefinition' => $validated['IndicatorDefinition'] ?? null,
+            'IndicatorQuestion'   => $validated['IndicatorQuestion'] ?? null,
+            'RemarksComments'     => $validated['RemarksComments'] ?? null,
+            'SourceOfData'        => $validated['SourceOfData'] ?? null,
+            'ResponseType'        => $validated['ResponseType'],
+            'ReportingPeriod'     => $validated['ReportingPeriod'] ?? null,
+            'ExpectedTarget'      => $validated['ExpectedTarget'] ?? null,
+            'BaselinePAD2023'     => $validated['BaselinePAD2023'] ?? null,
+            'Baseline2024'        => $validated['Baseline2024'] ?? null,
+            'TargetYearOne2024'   => $validated['TargetYearOne2024'] ?? null,
+            'TargetYearTwo2025'   => $validated['TargetYearTwo2025'] ?? null,
+            'TargetYearThree2026' => $validated['TargetYearThree2026'] ?? null,
+            'TargetYearFour2027'  => $validated['TargetYearFour2027'] ?? null,
+            'TargetYearFive2028'  => $validated['TargetYearFive2028'] ?? null,
+            'TargetYearSix2029'   => $validated['TargetYearSix2029'] ?? null,
+            'TargetYearSeven2030' => $validated['TargetYearSeven2030'] ?? null,
+            'created_at'          => now(),
+            'updated_at'          => now(),
         ]);
 
         if ($insertedId) {
@@ -131,29 +133,24 @@ class MpaIndicatorsController extends Controller
             session()->flash('error', 'Failed to add indicator. Please try again.');
         }
 
-        // Now re-fetch the same data as ShowEntityIndicators would.
-        // This means the user sees updated results.
+        // Re-fetch and return the updated view.
         return $this->refreshEntityIndicatorsView($validated['EntityID']);
     }
 
-    /**
-     * 3b) Update an existing Indicator.
-     *     Similarly, we re-fetch the data and return the same unified view.
-     */
     public function UpdateIndicator(Request $request)
     {
         $validated = $request->validate([
             'id'                         => 'required|exists:mpa_indicators,id',
             'EntityID'                   => 'required|exists:mpa_entities,EntityID',
-            'IndicatorPrimaryCategory'   => 'required|string|max:255',
-            'IndicatorSecondaryCategory' => 'required|string|max:255',
+            'IndicatorPrimaryCategory'   => 'required|string|in:CRF,RRF',
+            'IndicatorSecondaryCategory' => 'required|string|in:"CRF PDO","CRF Intermediate","RRF PDO","RRF Intermediate"',
             'IID'                        => 'required|string|max:255|unique:mpa_indicators,IID,' . $request->id,
             'Indicator'                  => 'required|string|max:255',
             'IndicatorDefinition'        => 'nullable|string',
             'IndicatorQuestion'          => 'nullable|string',
             'RemarksComments'            => 'nullable|string',
             'SourceOfData'               => 'nullable|string|max:255',
-            'ResponseType'               => 'required|in:Text,Number,Boolean,Yes/No',
+            'ResponseType'               => 'required|in:Text,Number,Boolean,Percentage,Yes/No',
             'ReportingPeriod'            => 'nullable|string|max:50',
             'ExpectedTarget'             => 'nullable|string|max:255',
             'BaselinePAD2023'            => 'nullable|string|max:255',
@@ -170,28 +167,28 @@ class MpaIndicatorsController extends Controller
         $affected = DB::table('mpa_indicators')
             ->where('id', $validated['id'])
             ->update([
-                'EntityID'                   => $validated['EntityID'],
-                'IndicatorPrimaryCategory'   => $validated['IndicatorPrimaryCategory'],
-                'IndicatorSecondaryCategory' => $validated['IndicatorSecondaryCategory'],
-                'IID'                        => $validated['IID'],
-                'Indicator'                  => $validated['Indicator'],
-                'IndicatorDefinition'        => $validated['IndicatorDefinition'] ?? null,
-                'IndicatorQuestion'          => $validated['IndicatorQuestion'] ?? null,
-                'RemarksComments'            => $validated['RemarksComments'] ?? null,
-                'SourceOfData'               => $validated['SourceOfData'] ?? null,
-                'ResponseType'               => $validated['ResponseType'],
-                'ReportingPeriod'            => $validated['ReportingPeriod'] ?? null,
-                'ExpectedTarget'             => $validated['ExpectedTarget'] ?? null,
-                'BaselinePAD2023'            => $validated['BaselinePAD2023'] ?? null,
-                'Baseline2024'               => $validated['Baseline2024'] ?? null,
-                'TargetYearOne2024'          => $validated['TargetYearOne2024'] ?? null,
-                'TargetYearTwo2025'          => $validated['TargetYearTwo2025'] ?? null,
-                'TargetYearThree2026'        => $validated['TargetYearThree2026'] ?? null,
-                'TargetYearFour2027'         => $validated['TargetYearFour2027'] ?? null,
-                'TargetYearFive2028'         => $validated['TargetYearFive2028'] ?? null,
-                'TargetYearSix2029'          => $validated['TargetYearSix2029'] ?? null,
-                'TargetYearSeven2030'        => $validated['TargetYearSeven2030'] ?? null,
-                'updated_at'                 => now(),
+                'EntityID'            => $validated['EntityID'],
+                'PrimaryCategory'     => $validated['IndicatorPrimaryCategory'],
+                'SecondaryCategory'   => $validated['IndicatorSecondaryCategory'],
+                'IID'                 => $validated['IID'],
+                'Indicator'           => $validated['Indicator'],
+                'IndicatorDefinition' => $validated['IndicatorDefinition'] ?? null,
+                'IndicatorQuestion'   => $validated['IndicatorQuestion'] ?? null,
+                'RemarksComments'     => $validated['RemarksComments'] ?? null,
+                'SourceOfData'        => $validated['SourceOfData'] ?? null,
+                'ResponseType'        => $validated['ResponseType'],
+                'ReportingPeriod'     => $validated['ReportingPeriod'] ?? null,
+                'ExpectedTarget'      => $validated['ExpectedTarget'] ?? null,
+                'BaselinePAD2023'     => $validated['BaselinePAD2023'] ?? null,
+                'Baseline2024'        => $validated['Baseline2024'] ?? null,
+                'TargetYearOne2024'   => $validated['TargetYearOne2024'] ?? null,
+                'TargetYearTwo2025'   => $validated['TargetYearTwo2025'] ?? null,
+                'TargetYearThree2026' => $validated['TargetYearThree2026'] ?? null,
+                'TargetYearFour2027'  => $validated['TargetYearFour2027'] ?? null,
+                'TargetYearFive2028'  => $validated['TargetYearFive2028'] ?? null,
+                'TargetYearSix2029'   => $validated['TargetYearSix2029'] ?? null,
+                'TargetYearSeven2030' => $validated['TargetYearSeven2030'] ?? null,
+                'updated_at'          => now(),
             ]);
 
         if ($affected) {
@@ -200,7 +197,6 @@ class MpaIndicatorsController extends Controller
             session()->flash('error', 'Failed to update indicator or no changes made.');
         }
 
-        // Return the same unified data
         return $this->refreshEntityIndicatorsView($validated['EntityID']);
     }
 
@@ -263,7 +259,7 @@ class MpaIndicatorsController extends Controller
 
         // Return the consistent data array for the "scrn" view
         $data = [
-            "Desc"           => "Manage Indicators for " . $entity->Entity,
+            "Desc"           => "",
             "Page"           => "indicators.MgtMpaIndicators",
             "entities"       => DB::table("mpa_entities")->get(),
             "SelectedEntity" => $entity,

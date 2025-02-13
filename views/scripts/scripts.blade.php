@@ -1,5 +1,3 @@
- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
  <!-- Libs JS -->
  <script src="{{ asset('dist/libs/apexcharts/dist/apexcharts.min.js?1738096685') }}" defer></script>
  <script src="{{ asset('dist/libs/jsvectormap/dist/jsvectormap.min.js?1738096685') }}" defer></script>

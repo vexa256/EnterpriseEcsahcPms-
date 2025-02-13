@@ -15,7 +15,7 @@
                 <!-- Searchable Auto-Complete Select (using Tabler's data-bs-toggle="select") -->
                 <div class="mb-3">
                     <label class="form-label" for="StrategicObjectiveID">Strategic Objective</label>
-                    <select class="form-select " data-bs-toggle="select"
+                    <select class="form-select" data-bs-toggle="select"
                         data-bs-placeholder="Search or select an option..." id="StrategicObjectiveID"
                         name="StrategicObjectiveID" required>
                         <option value="" disabled selected>Please select...</option>
@@ -37,3 +37,17 @@
         </div>
     </div>
 </div>
+
+{{-- SweetAlert2 notification for all messages passed from the controller --}}
+@if (isset($message) && $message)
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({
+                title: 'Notification',
+                text: "{{ $message }}",
+                icon: 'info',
+                confirmButtonText: 'OK'
+            });
+        });
+    </script>
+@endif

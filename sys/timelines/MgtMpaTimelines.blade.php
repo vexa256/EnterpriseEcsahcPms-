@@ -119,7 +119,7 @@
                         <select class="form-control type-select" id="Type" name="Type" required>
                             <option value="Quarterly">Quarterly</option>
                             <option value="Bi-Annual">Bi-Annual</option>
-                            <option value="Annual">Annual</option>
+                            <option value="Annually Reported">Annually Reported</option>
                         </select>
                     </div>
                     <div class="mb-3">
@@ -235,7 +235,7 @@
 @endforeach
 
 <!-- SweetAlert2 Script for Delete Confirmation -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
     function confirmDelete(timelineId) {
         Swal.fire({

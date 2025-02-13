@@ -21,12 +21,47 @@ class IndicatorsController extends Controller
 
     public function SelectSo()
     {
-        $data = [
+        $user    = auth()->user();
+        $message = "";
 
+        // If user is ECSA-HC and not an Admin, filter strategic objectives based on their cluster.
+        if ($user->UserType === 'ECSA-HC' && $user->AccountRole !== 'Admin') {
+                                               // Retrieve the user's ClusterID (from the users table)
+            $userClusterID = $user->ClusterID; // e.g. "HEPRR-MPA"
+
+            // Look up the cluster record to obtain its friendly name.
+            $clusterRecord = DB::table('clusters')
+                ->where('ClusterID', $userClusterID)
+                ->first();
+            $attachedCluster = $clusterRecord ? $clusterRecord->Cluster_Name : $userClusterID;
+
+            // Retrieve performance indicators where the Responsible_Cluster JSON contains either the user's ClusterID
+            // or the attached cluster name.
+            $indicatorSOIDs = DB::table('performance_indicators')
+                ->where(function ($query) use ($userClusterID, $attachedCluster) {
+                    $query->whereRaw("JSON_CONTAINS(Responsible_Cluster, '\"$userClusterID\"')")
+                        ->orWhereRaw("JSON_CONTAINS(Responsible_Cluster, '\"$attachedCluster\"')");
+                })
+                ->pluck('SO_ID')
+                ->unique();
+
+            // Retrieve strategic objectives using the SO_ID field (mapped to StrategicObjectiveID).
+            $strategicObjectives = DB::table('strategic_objectives')
+                ->whereIn('StrategicObjectiveID', $indicatorSOIDs)
+                ->get();
+
+            $message = "Hello!  Your attached cluster is '{$attachedCluster}', and you can see the Strategic Objectives linked to your indicators.";
+        } else {
+            // For Admin users, show all strategic objectives.
+            $strategicObjectives = DB::table('strategic_objectives')->get();
+            $message             = "Hello Admin! You can see all Strategic Objectives.";
+        }
+
+        $data = [
             "Desc"                => "Select Strategic Objective To Attach Indicators To",
             "Page"                => "indicators.SelectSO",
-            "strategicObjectives" => DB::table("strategic_objectives")->get(),
-
+            "strategicObjectives" => $strategicObjectives,
+            "message"             => $message,
         ];
 
         return view('scrn', $data);
@@ -47,6 +82,7 @@ class IndicatorsController extends Controller
         // Fetch indicators
         $indicators = DB::table('performance_indicators AS P')
             ->join('strategic_objectives AS S', 'S.StrategicObjectiveID', '=', 'P.SO_ID')
+            ->where('P.SO_ID', $StrategicObjectiveID)
             ->select('S.StrategicObjectiveID', 'P.*')
             ->get();
 
@@ -97,6 +133,7 @@ class IndicatorsController extends Controller
             'Target_Year3'          => 'nullable|integer',
             'Responsible_Cluster'   => 'required|array',  // Must be an array
             'Responsible_Cluster.*' => 'required|string', // Each element must be a string
+            'ResponseType'          => 'required|string', // Each element must be a string
         ]);
 
         // Insert the data into the performance_indicators table
@@ -109,6 +146,7 @@ class IndicatorsController extends Controller
             'Target_Year1'        => $validated['Target_Year1'] ?? null,
             'Target_Year2'        => $validated['Target_Year2'] ?? null,
             'Target_Year3'        => $validated['Target_Year3'] ?? null,
+            'ResponseType'        => $validated['ResponseType'] ?? null,
             'Responsible_Cluster' => json_encode($validated['Responsible_Cluster']),
             'created_at'          => now(),
             'updated_at'          => now(),
@@ -128,6 +166,9 @@ class IndicatorsController extends Controller
 
     public function UpdateEcsahcIndicators(Request $request)
     {
+
+        // dd($request->ResponseType);
+
         // Validate incoming data
         $validated = $request->validate([
             'id'                    => 'required|exists:performance_indicators,id',
@@ -151,6 +192,7 @@ class IndicatorsController extends Controller
             'Target_Year1'       => $validated['Target_Year1'] ?? null,
             'Target_Year2'       => $validated['Target_Year2'] ?? null,
             'Target_Year3'       => $validated['Target_Year3'] ?? null,
+            'ResponseType'       => $validated['ResponseType'] ?? null,
             'updated_at'         => now(),
         ];
 
@@ -164,6 +206,13 @@ class IndicatorsController extends Controller
             ->where('id', $validated['id'])
             ->update($updateData);
 
+        if ($request->has('ResponseType')) {
+            DB::table('performance_indicators')
+                ->where('id', $validated['id'])
+                ->update([
+                    'ResponseType' => $request->ResponseType,
+                ]);
+        }
         // Check if the update succeeded
         if ($affected) {
             return redirect()

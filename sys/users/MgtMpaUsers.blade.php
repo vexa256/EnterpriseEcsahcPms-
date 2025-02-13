@@ -171,7 +171,7 @@
                             <select class="form-control" id="AccountRole" name="AccountRole">
                                 <option value="Admin">Admin</option>
                                 <option value="User" selected>User</option>
-                                <option value="Viewer">Viewer</option>
+                                <option value="Cluster Head">Cluster Head</option>
                             </select>
                         </div>
                     </div>
@@ -422,7 +422,7 @@
 @endforeach
 
 {{-- SweetAlert2 Script for Delete Confirmation --}}
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
     function confirmDelete(userId) {
         Swal.fire({

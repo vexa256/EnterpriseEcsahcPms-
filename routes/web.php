@@ -7,15 +7,83 @@ use App\Http\Controllers\EcsahcTimelines;
 use App\Http\Controllers\EcsaIndicatorPerformanceController;
 use App\Http\Controllers\EcsaReportingController;
 use App\Http\Controllers\EntitiesController;
+use App\Http\Controllers\IndicatorReportController;
 use App\Http\Controllers\IndicatorsController;
 use App\Http\Controllers\MpaIndicatorsController;
+use App\Http\Controllers\MpaReportingCompleteness;
 use App\Http\Controllers\MpaRRFController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RRFReportController;
 use App\Http\Controllers\StrategicObjectivePerfomance;
 use App\Http\Controllers\UsersController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth'])->group(function () {
+
+    Route::get('rrf/report/select', [RRFReportController::class, 'selectReport'])
+        ->name('rrf.report.selectReport');
+
+    Route::match(['get', 'post'], 'rrf/report/select-year', [RRFReportController::class, 'selectYear'])
+        ->name('rrf.report.selectYear');
+
+    Route::post('rrf/report/dashboard', [RRFReportController::class, 'dashboard'])
+        ->name('rrf.report.dashboard');
+
+    Route::post('rrf/report/export', [RRFReportController::class, 'exportExcel'])
+        ->name('rrf.report.exportExcel');
+
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+
+    Route::get('/mpa/reports/completeness/select-year', [MpaReportingCompleteness::class, 'index'])->name('mpa.reports.completeness.select_year');
+
+    Route::get('/mpa/reports/completeness', [MpaReportingCompleteness::class, 'index'])->name('mpa.reports.completeness.index');
+
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+
+    Route::get('/entity/select', [IndicatorReportController::class, 'selectEntity'])
+        ->name('entity.select');
+
+    Route::get('/reporting/period/select', [IndicatorReportController::class, 'selectReportingPeriod'])
+        ->name('reporting.period.select');
+
+    Route::get('/indicators/show', [IndicatorReportController::class, 'showIndicators'])
+        ->name('indicator.show');
+
+    Route::post('/reports/submit', [IndicatorReportController::class, 'submitReports'])
+        ->name('indicator.submit');
+
+    Route::get('/report/summary/{entityID}/{year}/{reportingPeriod}', [IndicatorReportController::class, 'showReportSummary'])
+        ->name('indicator.report.summary');
+
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
 
     Route::get('/Ecsa_CP_selectYear', [ClusterPerformanceBreakdownController::class, 'Ecsa_CP_selectYear'])
         ->name('Ecsa_CP_selectYear');
@@ -70,7 +138,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/Reportselectcluster', [EcsaIndicatorPerformanceController::class, 'selectCluster'])->name('Reportselectcluster');
 
-    Route::get('/', [EcsaIndicatorPerformanceController::class, 'selectCluster'])->name('dashboard');
+    // Route::get('/', [EcsaIndicatorPerformanceController::class, 'selectCluster'])->name('dashboard');
 
     Route::get('/dashboard', [EcsaIndicatorPerformanceController::class, 'selectCluster'])->name('home');
 
@@ -115,12 +183,16 @@ Route::middleware(['auth'])->group(function () {
     //
     //
 
+    Route::get('/', [EcsaReportingController::class, 'SelectUser']);
+
 // Grouping under an 'ecsa' URI prefix for clarity.
     Route::prefix('ecsa')->group(function () {
 
         // GET route for selecting a user.
         Route::get('select-user', [EcsaReportingController::class, 'SelectUser'])
             ->name('Ecsa_SelectUser');
+
+        Route::get('/', [EcsaReportingController::class, 'SelectUser']);
 
         // POST route for selecting a cluster.
         Route::any('select-cluster', [EcsaReportingController::class, 'SelectCluster'])
