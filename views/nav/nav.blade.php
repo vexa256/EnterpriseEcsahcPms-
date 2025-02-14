@@ -147,35 +147,20 @@
                                 </div>
                             </li>
 
-                            <!-- Analytics and Report (visible to all non-admin users as well as Admins) -->
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#navbar-base" data-bs-toggle="dropdown"
-                                    data-bs-auto-close="outside" role="button" aria-expanded="false">
-                                    <span class="nav-link-icon d-md-none d-lg-inline-block">
-                                        <i class="fa-solid fa-chart-pie"></i>
-                                    </span>
-                                    <span class="nav-link-title">Analytics and Report</span>
-                                </a>
-                                <div class="dropdown-menu">
-                                    <div class="dropdown-menu-columns">
-                                        <div class="dropdown-menu-column">
-                                            @if ($isAdmin)
-                                                <a class="dropdown-item"
-                                                    href="{{ route('Reportselectcluster') }}">ECSA-HC Indicators
-                                                    Perfomance</a>
-                                                <a class="dropdown-item"
-                                                    href="{{ route('Ecsa_SO_selectYear') }}">ECSA-HC SO Perfomance</a>
-                                                <a class="dropdown-item"
-                                                    href="{{ route('Ecsa_CP_selectYear') }}">ECSA-HC Cluster
-                                                    Perfomance</a>
-                                                <a class="dropdown-item"
-                                                    href="{{ route('mpa.reports.completeness.select_year') }}">MPA
-                                                    Reporting Completness</a>
-                                                <a class="dropdown-item"
-                                                    href="{{ route('rrf.report.selectReport') }}">MPA RRF
-                                                    Performance</a>
-                                            @else
-                                                @if ($userType === 'ECSA-HC')
+                            <!-- Analytics and Report (visible only to Admins and ECSA-HC users) -->
+                            @if ($isAdmin || $userType === 'ECSA-HC')
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#navbar-base" data-bs-toggle="dropdown"
+                                        data-bs-auto-close="outside" role="button" aria-expanded="false">
+                                        <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                            <i class="fa-solid fa-chart-pie"></i>
+                                        </span>
+                                        <span class="nav-link-title">Analytics and Report</span>
+                                    </a>
+                                    <div class="dropdown-menu">
+                                        <div class="dropdown-menu-columns">
+                                            <div class="dropdown-menu-column">
+                                                @if ($isAdmin)
                                                     <a class="dropdown-item"
                                                         href="{{ route('Reportselectcluster') }}">ECSA-HC Indicators
                                                         Perfomance</a>
@@ -185,19 +170,38 @@
                                                     <a class="dropdown-item"
                                                         href="{{ route('Ecsa_CP_selectYear') }}">ECSA-HC Cluster
                                                         Perfomance</a>
-                                                @else
                                                     <a class="dropdown-item"
                                                         href="{{ route('mpa.reports.completeness.select_year') }}">MPA
                                                         Reporting Completness</a>
                                                     <a class="dropdown-item"
                                                         href="{{ route('rrf.report.selectReport') }}">MPA RRF
                                                         Performance</a>
+                                                @else
+                                                    @if ($userType === 'ECSA-HC')
+                                                        <a class="dropdown-item"
+                                                            href="{{ route('Reportselectcluster') }}">ECSA-HC
+                                                            Indicators
+                                                            Perfomance</a>
+                                                        <a class="dropdown-item"
+                                                            href="{{ route('Ecsa_SO_selectYear') }}">ECSA-HC SO
+                                                            Perfomance</a>
+                                                        <a class="dropdown-item"
+                                                            href="{{ route('Ecsa_CP_selectYear') }}">ECSA-HC Cluster
+                                                            Perfomance</a>
+                                                    @else
+                                                        <a class="dropdown-item"
+                                                            href="{{ route('mpa.reports.completeness.select_year') }}">MPA
+                                                            Reporting Completness</a>
+                                                        <a class="dropdown-item"
+                                                            href="{{ route('rrf.report.selectReport') }}">MPA RRF
+                                                            Performance</a>
+                                                    @endif
                                                 @endif
-                                            @endif
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </li>
+                                </li>
+                            @endif
 
                         </ul>
                     </div>
