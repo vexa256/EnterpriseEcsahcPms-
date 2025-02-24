@@ -163,6 +163,11 @@
             </div>
             <form action="{{ route('mpaIndicators.StoreIndicator') }}" method="POST" id="addIndicatorForm">
                 @csrf
+
+                <input type="hidden" name="EntityID" value="{{ $entityID }}">
+                <input type="hidden" name="entityID" value="{{ $entityID }}">
+                <input type="hidden" name="IID" value="{{ md5(uniqid() . uniqid()) }}">
+                <input type="hidden" name="iid" value="{{ md5(uniqid() . uniqid()) }}">
                 <div class="modal-body">
                     <div class="row mb-3">
                         <div class="col-lg-6">
@@ -298,8 +303,8 @@
                     @csrf
                     @method('PUT')
                     <input type="hidden" name="id" value="{{ $indicator->id }}">
-                    <input type="hidden" name="EntityID" value="{{ $SelectedEntity->EntityID }}">
-                    <input type="hidden" name="IID" value="{{ $indicator->IID }}">
+                    {{-- <input type="hidden" name="EntityID" value="{{ $entityID }}">
+                    <input type="hidden" name="IID" value="{{ md5(uniqid() . uniqid()) }}"> --}}
                     <div class="modal-body">
                         <div class="row mb-3">
                             <div class="col-lg-4">

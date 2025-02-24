@@ -52,6 +52,8 @@ class MpaIndicatorsController extends Controller
             ->orderBy('id', 'asc')
             ->get();
 
+        // dd($entityID);
+
         // Prepare the data array to be passed to the view.
         $data = [
             "Desc"           => "Manage CRF Indicators for " . $entity->Entity,
@@ -59,6 +61,7 @@ class MpaIndicatorsController extends Controller
             "entities"       => DB::table("mpa_entities")->get(), // All entities (if needed for layout)
             "SelectedEntity" => $entity,
             "indicators"     => $indicators,
+            "entityID"       => $entityID,
         ];
 
         // Return the view with the data.
@@ -72,6 +75,8 @@ class MpaIndicatorsController extends Controller
      */
     public function StoreIndicator(Request $request)
     {
+
+        // dd($request->EntityID);
         // Validate the incoming form data.
         // Note: Although the form fields are named IndicatorPrimaryCategory and IndicatorSecondaryCategory,
         // we will map these values to the DB columns PrimaryCategory and SecondaryCategory.
@@ -79,7 +84,7 @@ class MpaIndicatorsController extends Controller
             'EntityID'                   => 'required|exists:mpa_entities,EntityID',
             'IndicatorPrimaryCategory'   => 'required|string|in:CRF,RRF',
             'IndicatorSecondaryCategory' => 'required|string|in:"CRF PDO","CRF Intermediate","RRF PDO","RRF Intermediate"',
-            'IID'                        => 'required|string|max:255|unique:mpa_indicators,IID',
+            'IID'                        => 'required|string',
             'Indicator'                  => 'required|string|max:255',
             'IndicatorDefinition'        => 'nullable|string',
             'IndicatorQuestion'          => 'nullable|string',
@@ -264,6 +269,7 @@ class MpaIndicatorsController extends Controller
             "entities"       => DB::table("mpa_entities")->get(),
             "SelectedEntity" => $entity,
             "indicators"     => $indicators,
+            "entityID"       => $entityID,
         ];
 
         return view('scrn', $data);
