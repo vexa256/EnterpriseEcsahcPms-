@@ -139,3 +139,103 @@
          }, 1000); // Run every 1 second
      });
  </script>
+
+
+
+ <script>
+     /***************************************************************
+      * Initializes the Google Translate Element after the script loads.
+      * This sets up translation functionality, but its default UI is hidden with CSS.
+      ***************************************************************/
+     function googleTranslateElementInit() {
+         new google.translate.TranslateElement({
+             pageLanguage: 'en',
+             includedLanguages: 'en,fr,sw,pt,am',
+             autoDisplay: false
+         }, 'google_translate_element');
+     }
+
+     /**
+      * Sets or clears the 'googtrans' cookie, which Google Translate uses
+      * to determine the page translation language.
+      */
+     function setTranslateCookie(lang) {
+         if (lang === 'en') {
+             // Clear the translation cookie for English
+             document.cookie = 'googtrans=;path=/;';
+             document.cookie = 'googtrans=;path=/;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+         } else {
+             // Example: "googtrans=/auto/fr"
+             document.cookie = `googtrans=/auto/${lang};path=/;`;
+         }
+     }
+
+     /**
+      * Applies translation based on the chosen language.
+      * - Clears the cookie if 'en' is selected.
+      * - Otherwise, sets the translation cookie for the chosen language.
+      * - If the translation library is loaded, re-initialize to apply translation immediately.
+      */
+     function applyTranslation(lang) {
+         if (lang === 'en') {
+             setTranslateCookie('en');
+             return;
+         }
+         setTranslateCookie(lang);
+
+         // If Google Translate has loaded, re-initialize for an immediate effect
+         if (window.google && google.translate) {
+             googleTranslateElementInit();
+         }
+     }
+
+     /***************************************************************
+      * Main Logic on DOMContentLoaded:
+      *  1) Check localStorage for a stored language.
+      *  2) If not set, prompt user with SweetAlert.
+      *  3) On confirmation, store and apply the new language, then reload.
+      ***************************************************************/
+     document.addEventListener('DOMContentLoaded', function() {
+         const storedLang = localStorage.getItem('selectedLanguage');
+
+         if (!storedLang) {
+             Swal.fire({
+                 title: 'Select Your Preferred Language',
+                 text: 'Please choose one of the following:',
+                 icon: 'info',
+                 input: 'select',
+                 inputOptions: {
+                     en: 'English',
+                     fr: 'French',
+                     sw: 'Swahili',
+                     pt: 'Portuguese',
+                     am: 'Amharic'
+                 },
+                 inputPlaceholder: 'Pick a language...',
+                 showCancelButton: true,
+                 confirmButtonColor: '#3085d6',
+                 cancelButtonColor: '#d33',
+                 confirmButtonText: 'Confirm',
+                 cancelButtonText: 'Keep English',
+             }).then((result) => {
+                 if (result.isConfirmed && result.value) {
+                     // Store new choice
+                     localStorage.setItem('selectedLanguage', result.value);
+                     applyTranslation(result.value);
+
+                     // Reload the page so the translation cookie is picked up immediately
+                     location.reload();
+                 } else {
+                     // User canceled or kept English
+                     localStorage.setItem('selectedLanguage', 'en');
+
+                     // Reload in case we want a fresh state in English
+                     location.reload();
+                 }
+             });
+         } else {
+             // If there's a stored language, apply it
+             applyTranslation(storedLang);
+         }
+     });
+ </script>

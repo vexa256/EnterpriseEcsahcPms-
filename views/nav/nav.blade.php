@@ -11,12 +11,35 @@
                         <ul class="navbar-nav">
                             <!-- Home (Visible to everyone) -->
                             <li class="nav-item">
-                                <a class="nav-link" href="./">
+                                <a class="nav-link" href="{{ url('/') }}">
                                     <span class="nav-link-icon d-md-none d-lg-inline-block">
                                         <i class="fa-solid fa-house"></i>
                                     </span>
                                     <span class="nav-link-title">Home</span>
                                 </a>
+                            </li>
+
+                            <!-- Language Switcher Dropdown -->
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#navbar-language" data-bs-toggle="dropdown"
+                                    data-bs-auto-close="outside" role="button" aria-expanded="false">
+                                    <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                        <i class="fa-solid fa-language"></i>
+                                    </span>
+                                    <span class="nav-link-title">Language</span>
+                                </a>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item" href="#"
+                                        onclick="setLanguage('en'); return false;">English</a>
+                                    <a class="dropdown-item" href="#"
+                                        onclick="setLanguage('fr'); return false;">French</a>
+                                    <a class="dropdown-item" href="#"
+                                        onclick="setLanguage('sw'); return false;">Swahili</a>
+                                    <a class="dropdown-item" href="#"
+                                        onclick="setLanguage('pt'); return false;">Portuguese</a>
+                                    <a class="dropdown-item" href="#"
+                                        onclick="setLanguage('am'); return false;">Amharic</a>
+                                </div>
                             </li>
 
                             {{-- Only Admins see the following sections --}}

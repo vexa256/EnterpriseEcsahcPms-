@@ -113,8 +113,77 @@ https://cdn.jsdelivr.net/npm/sweetalert2@11.16.0/dist/sweetalert2.min.css
     }
 </style>
 
+
+<style>
+    /***************************************************************
+     * 100% Hide or remove *all* Google Translate related DOM elements
+     * and iframes so the user never sees them.
+     *
+     * The classes/IDs below cover:
+     *  - The top Google Translate banner
+     *  - The tooltip balloon
+     *  - The inline widget
+     *  - The little 'Powered by Google' branding
+     *  - The iframes that hold menus
+     ****************************************************************/
+    .goog-te-banner-frame.skiptranslate,
+    .goog-te-menu-frame,
+    .goog-te-menu2,
+    .goog-te-gadget-icon,
+    #goog-gt-tt,
+    .goog-te-balloon-frame,
+    .goog-tooltip,
+    #goog-translate-element,
+    #google_translate_element,
+    .goog-te-menu-value {
+        display: none !important;
+        visibility: hidden !important;
+        height: 0 !important;
+        width: 0 !important;
+        overflow: hidden !important;
+    }
+
+    /* Some versions inject an iframe with a name attribute */
+    iframe[name="goog-translate-frame"] {
+        display: none !important;
+        visibility: hidden !important;
+    }
+
+    /* Force the body to remove any top padding that might be added by the script */
+    body {
+        top: 0 !important;
+    }
+
+
+    .goog-te-banner-frame.skiptranslate {
+        display: none !important;
+    }
+
+    body {
+        top: 0px !important;
+    }
+
+
+    body>.skiptranslate {
+        display: none;
+    }
+</style>
+
+
+
+<link rel="dns-prefetch" href="//translate.google.com">
+<link rel="preconnect" href="//translate.google.com" crossorigin>
+
+<!--
+  2. Load Google Translate Script Early (no 'defer' or 'async' here,
+     so it definitely loads and calls googleTranslateElementInit immediately).
+-->
+<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit">
+</script>
+
 </head>
 
 <body class=" layout-fluid">
+    <div id="google_translate_element" style="display: none;"></div>
 
     <script src="{{ asset('dist/js/demo-theme.min.js?1738096685') }}"></script>
